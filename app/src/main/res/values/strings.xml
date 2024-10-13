@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Movie Library</string>
+    <string name="movie">Movie</string>
+    <string name="no_movies">Library is empty</string>
+    <string name="movie_entry_title">Add movie</string>
+    <string name="save_action">Save</string>
+    <string name="movie_title_req">Movie Title*</string>
+    <string name="movie_description_req">Description*</string>
+    <string name="required_fields">*required fields</string>
+    <string name="back_button">Back</string>
+    <string name="attention">Attention</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="description">Description:</string>
+    <string name="edit_movie_title">Edit Movie</string>
+    <string name="select_image">Select image</string>
+</resources>

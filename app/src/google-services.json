@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "431991632416",
+    "project_id": "movie-library-3b87a",
+    "storage_bucket": "movie-library-3b87a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431991632416:android:513563630be121c9728245",
+        "android_client_info": {
+          "package_name": "ua.edu.sumdu.movielibrary"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxSMhL8LerMzouOfOT9HAgCIA8EYXdV6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
