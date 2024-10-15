@@ -17,39 +17,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
+
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.edu.sumdu.movielibrary.R
 import ua.edu.sumdu.movielibrary.data.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.repository.OnlineMovieRepository
 
 @Composable
 fun LoginScreen(
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
     onNavigationToMainScreen: (MainScreenDataObject) -> Unit
 ) {
+    val repository = OnlineMovieRepository()
 
-    val auth = remember {
-        Firebase.auth
-    }
-
-    val errorState = remember {
-        mutableStateOf("")
-    }
-
-    val emailState = remember {
-        mutableStateOf("")
-    }
-    val passwordState = remember {
-        mutableStateOf("")
-    }
 
     Image(
         painter = painterResource(id = R.drawable.lotr),
@@ -69,59 +55,40 @@ fun LoginScreen(
     ) {
 
         RoundedCornerTextField(
-            text = emailState.value,
+            text = viewModel.state.email,
             label = "Email",
 
             ) {
-            emailState.value = it
+            viewModel.setEmail(it)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedCornerTextField(
-            text = passwordState.value,
+            text = viewModel.state.password,
             label = "Password",
-
-            ) {
-            passwordState.value = it
+        ) {
+            viewModel.setPassword(it)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        if (errorState.value.isNotEmpty()) {
+        if (viewModel.state.error.isNotEmpty()) {
             Text(
-                text = errorState.value,
+                text = viewModel.state.error,
                 color = Color.Red
             )
         }
 
         LoginButton(text = "Sign in") {
-            signIn(
-                auth,
-                emailState.value,
-                passwordState.value,
-                onSignInSuccess = { navData ->
-                    onNavigationToMainScreen(navData)
-                    Log.d("MyLog", "Sign In Success")
-                },
-                onSignInFailure = { error ->
-                    errorState.value = error
-                }
-            )
+           viewModel.signIn { navData ->
+               onNavigationToMainScreen(navData)
+           }
         }
         LoginButton(text = "Sign up") {
-            signUp(
-                auth,
-                emailState.value,
-                passwordState.value,
-                onSignUpSuccess = { navData ->
-                    onNavigationToMainScreen(navData)
-                    Log.d("MyLog", "Sign Up Success")
-                },
-                onSignUpFailure = { error ->
-                    errorState.value = error
-                }
-            )
+            viewModel.signUp { navData ->
+                onNavigationToMainScreen(navData)
+            }
         }
     }
 
@@ -170,59 +137,3 @@ fun RoundedCornerTextField(
     )
 }
 
-
-fun signUp(
-    auth: FirebaseAuth,
-    email: String,
-    password: String,
-    onSignUpSuccess: (MainScreenDataObject) -> Unit,
-    onSignUpFailure: (String) -> Unit
-) {
-    if (email.isBlank() || password.isBlank()) {
-        onSignUpFailure("Email or password can't be empty")
-        return
-    }
-
-    auth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onSignUpSuccess(
-                    MainScreenDataObject(
-                        task.result.user?.uid!!,
-                        task.result.user?.email!!
-                    )
-                )
-            }
-        }
-        .addOnFailureListener {
-            onSignUpFailure(it.message ?: "Sign Up Error")
-        }
-}
-
-private fun signIn(
-    auth: FirebaseAuth,
-    email: String,
-    password: String,
-    onSignInSuccess: (MainScreenDataObject) -> Unit,
-    onSignInFailure: (String) -> Unit
-) {
-    if (email.isBlank() || password.isBlank()) {
-        onSignInFailure("Email or password can't be empty")
-        return
-    }
-
-    auth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onSignInSuccess(
-                    MainScreenDataObject(
-                        task.result.user?.uid!!,
-                        task.result.user?.email!!
-                    )
-                )
-            }
-        }
-        .addOnFailureListener {
-            onSignInFailure(it.message ?: "Sign Up Error")
-        }
-}
