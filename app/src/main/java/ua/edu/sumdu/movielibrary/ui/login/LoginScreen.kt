@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,10 +33,10 @@ import ua.edu.sumdu.movielibrary.repository.OnlineMovieRepository
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
+    loginViewModel: LoginViewModel = viewModel(),
     onNavigationToMainScreen: (MainScreenDataObject) -> Unit
 ) {
-    val repository = OnlineMovieRepository()
+    val loginUiState by loginViewModel.uiState.collectAsState()
 
 
     Image(
@@ -55,38 +57,38 @@ fun LoginScreen(
     ) {
 
         RoundedCornerTextField(
-            text = viewModel.state.email,
+            text = loginUiState.email,
             label = "Email",
 
             ) {
-            viewModel.setEmail(it)
+            loginViewModel.setEmail(it)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         RoundedCornerTextField(
-            text = viewModel.state.password,
+            text = loginUiState.password,
             label = "Password",
         ) {
-            viewModel.setPassword(it)
+            loginViewModel.setPassword(it)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        if (viewModel.state.error.isNotEmpty()) {
+        if (loginUiState.error.isNotEmpty()) {
             Text(
-                text = viewModel.state.error,
+                text = loginUiState.error,
                 color = Color.Red
             )
         }
 
         LoginButton(text = "Sign in") {
-           viewModel.signIn { navData ->
+           loginViewModel.signIn { navData ->
                onNavigationToMainScreen(navData)
            }
         }
         LoginButton(text = "Sign up") {
-            viewModel.signUp { navData ->
+            loginViewModel.signUp { navData ->
                 onNavigationToMainScreen(navData)
             }
         }
@@ -129,7 +131,9 @@ fun RoundedCornerTextField(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent
         ),
-        modifier = Modifier.fillMaxWidth().border(2.dp, Color.Black, RoundedCornerShape(20.dp)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(2.dp, Color.Black, RoundedCornerShape(20.dp)),
         label = {
             Text(text = label)
         },
