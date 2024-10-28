@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            MovieNavHost(navController = navController)
+            MovieNavHostt(navController = navController)
         }
     }
 }

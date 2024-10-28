@@ -47,7 +47,7 @@ fun NavGraphBuilder.movieGraph(navController: NavController) {
 
         composable<Movie> { backStackEntry ->
             val movie = backStackEntry.toRoute<Movie>()
-            MovieScreen(movie.id)
+            MovieScreen(movie)
         }
     }
 }
@@ -74,7 +74,7 @@ fun MovieListScreen(
 }
 
 @Composable
-fun MovieScreen(movieId: Int) {
-    Text(text = "Деталі фільму з ID: $movieId")
+fun MovieScreen(movie: Movie) {
+    Text(text = "Деталі фільму з ID: ${movie.id} is ${movie.title}")
 }
 
