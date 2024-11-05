@@ -1,8 +1,5 @@
-package ua.edu.sumdu.movielibrary.ui.navigation
+package ua.edu.sumdu.movielibrary.navigation
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,40 +28,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import coil.compose.AsyncImage
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import ua.edu.sumdu.movielibrary.R
-import ua.edu.sumdu.movielibrary.data.Movie
-import java.io.ByteArrayOutputStream
+import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.Dto.MovieListObject
+import ua.edu.sumdu.movielibrary.data.Dto.toMovieDto
+import ua.edu.sumdu.movielibrary.domain.Movie
+import ua.edu.sumdu.movielibrary.data.FireBaseRepository
 
 @Serializable
 object MovieGraph
-
-@Serializable
-data class MovieDto(
-    val title: String = "",
-    val description: String = "",
-    val imageUrl: String = "",
-    val director: String = "",
-    val genres: List<String> = listOf()
-)
-
-fun Movie.toMovieDto(): MovieDto{
-    return MovieDto(
-        title = title,
-        description = description,
-        imageUrl = imageUrl,
-        director = director,
-        genres = genres
-    )
-}
-
-@Serializable
-object MovieList
 
 @Composable
 fun MovieNavHostt(
@@ -81,8 +53,8 @@ fun MovieNavHostt(
 }
 
 fun NavGraphBuilder.movieGraph(navController: NavController) {
-    navigation<MovieGraph>(startDestination = MovieList) {
-        composable<MovieList> {
+    navigation<MovieGraph>(startDestination = MovieListObject) {
+        composable<MovieListObject> {
             MovieListScreen { navData ->
                 navController.navigate(navData)
             }
@@ -100,17 +72,14 @@ fun MovieListScreen(
     onNavigationToMovie: (MovieDto) -> Unit
 ) {
     val context = LocalContext.current
-    val fs = Firebase.firestore
-    val storage = Firebase.storage.reference.child("images")
+    val fireBaseRepository = FireBaseRepository()
 
     Button(onClick = {
-        val task = storage.child("lotr.jpeg").putBytes(
-            bitmapToByteArray(context)
-        )
+        val task = fireBaseRepository.getImageTask(context)
         task.addOnSuccessListener { uploadTask ->
             uploadTask.metadata?.reference
                 ?.downloadUrl?.addOnCompleteListener{ uriTask ->
-                    saveMovie(fs, uriTask.result.toString())
+                    fireBaseRepository.saveMovie(uriTask.result.toString())
             }
         }
     }) { Text(text = "Add") }
@@ -119,7 +88,7 @@ fun MovieListScreen(
         mutableStateOf(emptyList<Movie>())
     }
 
-    val listener = fs.collection("movies").addSnapshotListener { snapShot, exception ->
+    val listener = fireBaseRepository.getMovies().addSnapshotListener { snapShot, exception ->
         list.value = snapShot?.toObjects(Movie::class.java) ?: emptyList()
     }
 
@@ -158,23 +127,4 @@ fun MovieScreen(movie: MovieDto) {
     Text(text = "Movie ${movie.title}, ${movie.director}")
 }
 
-private fun bitmapToByteArray(context: Context): ByteArray{
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.lotr)
-    val boas = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, boas)
-    return boas.toByteArray()
-}
-
-private fun saveMovie(fs: FirebaseFirestore, url: String){
-    fs.collection("movies")
-        .document()
-        .set(
-            Movie(
-                "title1",
-                "desc1",
-                url,
-                "dir1",
-            )
-        )
-}
 

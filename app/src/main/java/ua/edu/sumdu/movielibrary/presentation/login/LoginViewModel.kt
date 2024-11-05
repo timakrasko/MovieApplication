@@ -1,16 +1,16 @@
-package ua.edu.sumdu.movielibrary.ui.login
+package ua.edu.sumdu.movielibrary.presentation.login
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import ua.edu.sumdu.movielibrary.data.MainScreenDataObject
-import ua.edu.sumdu.movielibrary.repository.OnlineMovieRepository
+import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.OnlineMovieRepository
 
 data class LoginUiState(
-    val email: String = "",
-    val password: String = "",
+    val email: String = "timakrasko2004@gmail.com",
+    val password: String = "123456789",
     val error: String = ""
 )
 

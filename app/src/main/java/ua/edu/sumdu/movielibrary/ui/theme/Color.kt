@@ -2,17 +2,17 @@ package ua.edu.sumdu.movielibrary.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF6A1B9A)            // Основной фиолетовый
-val onPrimaryLight = Color(0xFFFFFFFF)          // Белый текст на основном фиолетовом
-val primaryContainerLight = Color(0xFFE1BEE7)   // Светлый фиолетовый контейнер
-val onPrimaryContainerLight = Color(0xFF311B92) // Тёмный фиолетовый текст на светлом фоне
+val primaryLight = Color(0xFF6A1B9A)
+val onPrimaryLight = Color(0xFFFFFFFF)
+val primaryContainerLight = Color(0xFFE1BEE7)
+val onPrimaryContainerLight = Color(0xFF311B92)
 
-val secondaryLight = Color(0xFF7B1FA2)          // Вторичный фиолетовый
+val secondaryLight = Color(0xFF7B1FA2)
 val onSecondaryLight = Color(0xFFFFFFFF)
 val secondaryContainerLight = Color(0xFFF3E5F5)
 val onSecondaryContainerLight = Color(0xFF4A0072)
 
-val tertiaryLight = Color(0xFF9575CD)           // Третичный фиолетовый
+val tertiaryLight = Color(0xFF9575CD)
 val onTertiaryLight = Color(0xFFFFFFFF)
 val tertiaryContainerLight = Color(0xFFD1C4E9)
 val onTertiaryContainerLight = Color(0xFF311B92)
@@ -22,7 +22,7 @@ val onErrorLight = Color(0xFFFFFFFF)
 val errorContainerLight = Color(0xFFFFDAD6)
 val onErrorContainerLight = Color(0xFF410002)
 
-val backgroundLight = Color(0xFFF3E5F5)         // Светло-фиолетовый фон
+val backgroundLight = Color(0xFFF3E5F5)
 val onBackgroundLight = Color(0xFF1A1A1A)
 val surfaceLight = Color(0xFFF3E5F5)
 val onSurfaceLight = Color(0xFF1A1A1A)
@@ -44,9 +44,9 @@ val surfaceContainerLight = Color(0xFFEBE2F6)
 val surfaceContainerHighLight = Color(0xFFE3DFF4)
 val surfaceContainerHighestLight = Color(0xFFD8D3ED)
 
-val primaryDark = Color(0xFFBA68C8)             // Основной светло-фиолетовый
-val onPrimaryDark = Color(0xFF4A0072)           // Тёмный фиолетовый текст
-val primaryContainerDark = Color(0xFF8E24AA)    // Контейнер с основным фиолетовым
+val primaryDark = Color(0xFFBA68C8)
+val onPrimaryDark = Color(0xFF4A0072)
+val primaryContainerDark = Color(0xFF8E24AA)
 val onPrimaryContainerDark = Color(0xFFE1BEE7)
 
 val secondaryDark = Color(0xFFAB47BC)
@@ -64,8 +64,8 @@ val onErrorDark = Color(0xFF690005)
 val errorContainerDark = Color(0xFF93000A)
 val onErrorContainerDark = Color(0xFFFFDAD6)
 
-val backgroundDark = Color(0xFF1A1A1A)          // Тёмный фон
-val onBackgroundDark = Color(0xFFEDE7F6)        // Светло-фиолетовый текст
+val backgroundDark = Color(0xFF1A1A1A)
+val onBackgroundDark = Color(0xFFEDE7F6)
 val surfaceDark = Color(0xFF1A1A1A)
 val onSurfaceDark = Color(0xFFEDE7F6)
 val surfaceVariantDark = Color(0xFF424242)

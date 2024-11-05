@@ -1,4 +1,4 @@
-package ua.edu.sumdu.movielibrary.ui.login
+package ua.edu.sumdu.movielibrary.presentation.login
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,8 +29,8 @@ import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.edu.sumdu.movielibrary.R
-import ua.edu.sumdu.movielibrary.data.MainScreenDataObject
-import ua.edu.sumdu.movielibrary.repository.OnlineMovieRepository
+import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.OnlineMovieRepository
 
 @Composable
 fun LoginScreen(
@@ -38,6 +39,14 @@ fun LoginScreen(
 ) {
     val loginUiState by loginViewModel.uiState.collectAsState()
 
+
+    //КАСТЫЛЬ
+    val onlineMovieRepository = OnlineMovieRepository()
+    val fb = onlineMovieRepository.isSignedIn()
+    if (fb.currentUser != null){
+        onNavigationToMainScreen(MainScreenDataObject(fb.currentUser?.uid?: "", fb.currentUser?.email?: ""))
+    }
+    //ДО СИХ ПОР КАСТЫЛЬ
 
     Image(
         painter = painterResource(id = R.drawable.lotr),
@@ -83,9 +92,9 @@ fun LoginScreen(
         }
 
         LoginButton(text = "Sign in") {
-           loginViewModel.signIn { navData ->
-               onNavigationToMainScreen(navData)
-           }
+            loginViewModel.signIn { navData ->
+                onNavigationToMainScreen(navData)
+            }
         }
         LoginButton(text = "Sign up") {
             loginViewModel.signUp { navData ->
@@ -101,15 +110,16 @@ fun LoginButton(
     text: String,
     onClick: () -> Unit
 ) {
-    Button(onClick = {
-        onClick()
-    },
+    Button(
+        onClick = {
+            onClick()
+        },
         modifier = Modifier.fillMaxWidth(0.5f),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.LightGray,
+            containerColor = Color.DarkGray,
         )
     ) {
-        Text(text = text, color = Color.Black)
+        Text(text = text, color = Color.White)
     }
 }
 
@@ -125,19 +135,17 @@ fun RoundedCornerTextField(
             onValueChange(it)
         },
         shape = RoundedCornerShape(20.dp),
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.White,
-            focusedContainerColor = Color.White,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent
-        ),
         modifier = Modifier
             .fillMaxWidth()
             .border(2.dp, Color.Black, RoundedCornerShape(20.dp)),
         label = {
             Text(text = label)
         },
-        singleLine = true
+        singleLine = true,
+        colors = TextFieldDefaults.colors(
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent
+        ),
     )
 }
 

@@ -1,4 +1,4 @@
-package ua.edu.sumdu.movielibrary.ui.navigation
+package ua.edu.sumdu.movielibrary.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,10 +6,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import ua.edu.sumdu.movielibrary.data.LoginScreenObject
-import ua.edu.sumdu.movielibrary.data.MainScreenDataObject
-import ua.edu.sumdu.movielibrary.ui.login.LoginScreen
-import ua.edu.sumdu.movielibrary.ui.main_screen.MainScreen
+import ua.edu.sumdu.movielibrary.data.Dto.LoginScreenObject
+import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
+import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
+import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsScreen
 
 @Composable
 fun MovieNavHost(
@@ -29,7 +31,14 @@ fun MovieNavHost(
 
         composable<MainScreenDataObject> { navEntry ->
             val navData = navEntry.toRoute<MainScreenDataObject>()
-            MainScreen()
+            MainScreen() { movie ->
+                navController.navigate(movie)
+            }
+        }
+
+        composable<MovieDto> { backStackEntry ->
+            val movie = backStackEntry.toRoute<MovieDto>()
+            MovieDetailsScreen(movie)
         }
     }
 }

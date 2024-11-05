@@ -1,4 +1,4 @@
-package ua.edu.sumdu.movielibrary.ui.main_screen.bottom_menu
+package ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar

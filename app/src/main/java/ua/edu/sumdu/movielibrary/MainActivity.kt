@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import ua.edu.sumdu.movielibrary.ui.navigation.MovieNavHost
-import ua.edu.sumdu.movielibrary.ui.navigation.MovieNavHostt
+import ua.edu.sumdu.movielibrary.navigation.MovieNavHost
+import ua.edu.sumdu.movielibrary.navigation.MovieNavHostt
 import ua.edu.sumdu.movielibrary.ui.theme.MovieLibraryTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
 
-                    MovieNavHostt(navController = navController, modifier = Modifier.padding(innerPadding))
+                    MovieNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
                 }
 
             }

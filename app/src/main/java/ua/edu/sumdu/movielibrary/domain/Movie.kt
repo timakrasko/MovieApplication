@@ -1,4 +1,4 @@
-package ua.edu.sumdu.movielibrary.data
+package ua.edu.sumdu.movielibrary.domain
 
 data class Movie(
     val title: String = "",
