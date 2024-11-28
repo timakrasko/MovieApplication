@@ -79,7 +79,7 @@ fun MovieListScreen(
         task.addOnSuccessListener { uploadTask ->
             uploadTask.metadata?.reference
                 ?.downloadUrl?.addOnCompleteListener{ uriTask ->
-                    fireBaseRepository.saveMovie(uriTask.result.toString())
+                    fireBaseRepository.saveMovie(Movie())
             }
         }
     }) { Text(text = "Add") }

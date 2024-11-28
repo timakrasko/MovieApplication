@@ -21,10 +21,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,29 +38,33 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.Dto.toMovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
-import ua.edu.sumdu.movielibrary.data.FireBaseRepository
 import ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu.BottomMenu
 import ua.edu.sumdu.movielibrary.ui.theme.PurpleGrey40
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
+    viewModel: MainViewModel = viewModel(),
     navigateToMovieDetails: (MovieDto) -> Unit
 ) {
+    val movieList by viewModel.movieList.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
     ModalNavigationDrawer(
         modifier = Modifier.fillMaxWidth(),
         drawerContent = {
             Column(
                 modifier = Modifier.fillMaxWidth(0.7f)
             ) {
-
+                Text("Drawer Content")
             }
         }
     ) {
@@ -65,50 +72,42 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             bottomBar = { BottomMenu() }
         ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                MovieList(movieList, navigateToMovieDetails)
 
+                Button(
+                    onClick = { viewModel.addMovie(context) },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(text = "Add Movie")
+                }
+
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+
+                uiState.errorMessage?.let {
+                    Text(text = it, color = Color.Red)
+                }
+            }
         }
     }
-    val context = LocalContext.current
-    val fireBaseRepository = FireBaseRepository()
-
-    MovieList(fireBaseRepository, navigateToMovieDetails)
-    Button(onClick = {
-        val task = fireBaseRepository.getImageTask(context)
-        task.addOnSuccessListener { uploadTask ->
-            uploadTask.metadata?.reference
-                ?.downloadUrl?.addOnCompleteListener{ uriTask ->
-                    fireBaseRepository.saveMovie(uriTask.result.toString())
-                }
-        }
-    }) { Text(text = "Add") }
 }
 
 @Composable
 fun MovieList(
-    fireBaseRepository: FireBaseRepository,
+    movieList: List<Movie>,
     onMovieClick: (MovieDto) -> Unit
 ) {
-    val list = remember {
-        mutableStateOf(emptyList<Movie>())
-    }
-
-    fireBaseRepository.getMovies().addSnapshotListener { snapShot, exception -> //stop on leave page
-        list.value = snapShot?.toObjects(Movie::class.java) ?: emptyList()
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.8f)
     ) {
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.8f)
-        ) {
-            items(list.value) { movie ->
-                MovieCard(movie) { onMovieClick(it) }
-            }
+        items(movieList) { movie ->
+            MovieCard(movie, onMovieClick)
         }
     }
 }

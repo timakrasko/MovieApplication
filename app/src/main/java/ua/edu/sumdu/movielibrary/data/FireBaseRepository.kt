@@ -31,17 +31,11 @@ class FireBaseRepository {
         return boas.toByteArray()
     }
 
-    fun saveMovie(url: String){
+    fun saveMovie(movie: Movie){
         fs.collection("movies")
             .document()
             .set(
-                Movie(
-                    "The Lord of The Rings",
-                    "desc1",
-                    url,
-                    "Piter Jackson",
-                    listOf("Fantasy", "Drama", "Action")
-                )
+                movie
             )
     }
 }
