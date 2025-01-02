@@ -2,7 +2,6 @@ package ua.edu.sumdu.movielibrary.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,13 +11,12 @@ import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
-import ua.edu.sumdu.movielibrary.presentation.main_screen.MainViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsScreen
 
 @Composable
 fun MovieNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
@@ -30,9 +28,7 @@ fun MovieNavHost(
                 navController.navigate(navData)
             }
         }
-
-        composable<MainScreenDataObject> { navEntry ->
-            val navData = navEntry.toRoute<MainScreenDataObject>()
+        composable<MainScreenDataObject> {
             MainScreen{ movie ->
                 navController.navigate(movie)
             }

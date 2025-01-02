@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,10 +25,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,77 +36,76 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.Dto.toMovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
 import ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu.BottomMenu
 import ua.edu.sumdu.movielibrary.ui.theme.PurpleGrey40
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainViewModel = koinViewModel(),
     navigateToMovieDetails: (MovieDto) -> Unit
 ) {
-    val movieList by viewModel.movieList.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
+    val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
 
-    ModalNavigationDrawer(
-        modifier = Modifier.fillMaxWidth(),
-        drawerContent = {
-            Column(
-                modifier = Modifier.fillMaxWidth(0.7f)
-            ) {
-                Text("Drawer Content")
-            }
-        }
-    ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            bottomBar = { BottomMenu() }
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                MovieList(movieList, navigateToMovieDetails)
 
-                Button(
-                    onClick = { viewModel.addMovie(context) },
-                    modifier = Modifier.padding(16.dp)
+    if (movieListState.isLoading) {
+
+    } else {
+        ModalNavigationDrawer(
+            modifier = Modifier.fillMaxWidth(),
+            drawerContent = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(0.7f)
                 ) {
-                    Text(text = "Add Movie")
+                    Text("Drawer Content")
                 }
+            }
+        ) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                bottomBar = { BottomMenu() }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(movieListState.movies) { movie ->
+                            MovieCard(movie, navigateToMovieDetails)
+                        }
+                    }
 
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
+                    Button(
+                        onClick = {  },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(text = "Add Movie")
+                    }
 
-                uiState.errorMessage?.let {
-                    Text(text = it, color = Color.Red)
+                    if (movieListState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    }
+
+                    movieListState.errorMessage?.let {
+                        Text(text = it, color = Color.Red)
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun MovieList(
-    movieList: List<Movie>,
-    onMovieClick: (MovieDto) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.8f)
-    ) {
-        items(movieList) { movie ->
-            MovieCard(movie, onMovieClick)
-        }
-    }
-}
 
 @Composable
 fun MovieCard(

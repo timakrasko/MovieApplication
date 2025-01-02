@@ -3,11 +3,14 @@ activityComposeVersion = "1.8.1"
 agp = "8.7.1"
 coilCompose = "2.6.0"
 composeBomVersion = "2023.10.01"
+coreTesting = "2.2.0"
 kotlin = "2.0.0"
+koin = "3.5.6"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinxCoroutinesTest = "1.9.0"
 kotlinxSerializationJson = "1.7.2"
 lifecycleRuntimeKtx = "2.8.5"
 activityCompose = "1.9.2"
@@ -15,21 +18,23 @@ composeBom = "2024.04.01"
 lifecycleRuntimeKtxVersion = "2.6.2"
 lifecycleViewmodelCompose = "2.8.6"
 material = "1.7.3"
+mockitoKotlin = "3.2.0"
 navigationCompose = "2.8.2"
 navigationRuntimeKtx = "2.8.2"
 googleGmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
-firebaseFirestoreKtx = "25.1.0"
+firebaseFirestoreKtx = "25.1.1"
 firebaseStorage = "21.0.1"
-firebaseAuth = "23.0.0"
+firebaseAuth = "23.1.0"
 kotlinxSerializationVersion = "2.0.0"
-junitJunit = "4.12"
+junitJunit = "4.13.2"
 junitJupiter = "5.8.1"
 
 [libraries]
 androidx-activity-compose-v181 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 androidx-compose-bom-v20231001 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-lifecycle-runtime-ktx-v262 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
@@ -53,13 +58,18 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 material3 = { module = "androidx.compose.material3:material3" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 ui = { module = "androidx.compose.ui:ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
 
 [plugins]
@@ -70,3 +80,10 @@ google-gms-google-services = { id = "com.google.gms.google-services", version.re
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 plugin-serialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerializationVersion" }
+
+[bundles]
+koin = [
+    "koin-core",
+    "koin-android",
+    "koin-androidx-compose"
+]

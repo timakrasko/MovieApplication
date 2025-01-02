@@ -1,41 +1,32 @@
 package ua.edu.sumdu.movielibrary.data
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.UploadTask
-import com.google.firebase.storage.storage
-import ua.edu.sumdu.movielibrary.R
+import kotlinx.coroutines.tasks.await
+import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
-import java.io.ByteArrayOutputStream
 
-class FireBaseRepository {
 
-    val fs = Firebase.firestore
-    val storage = Firebase.storage.reference.child("images")
+class FireBaseRepository : MovieRepository{
 
-    fun getImageTask(context: Context): UploadTask{
-        return storage.child("lotr.jpeg").putBytes(
-            bitmapToByteArray(context)
-        )
+    private val dataBase = Firebase.firestore.collection("movies")
+
+    override suspend fun getMovies(): List<Movie> {
+        return try {
+            dataBase.get().await().documents.map { it.toObject(Movie::class.java)!! }
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
-    fun getMovies() = fs.collection("movies")
-
-    private fun bitmapToByteArray(context: Context): ByteArray{
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.lotr)
-        val boas = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, boas)
-        return boas.toByteArray()
+    override suspend fun addMovie(movie: Movie) {
+        dataBase.add(movie).await()
     }
 
-    fun saveMovie(movie: Movie){
-        fs.collection("movies")
-            .document()
-            .set(
-                movie
-            )
+    override suspend fun deleteMovie(id: String) {
+        dataBase.whereEqualTo("id", id).get().await().documents.forEach {
+            it.reference.delete().await()
+        }
     }
+
 }

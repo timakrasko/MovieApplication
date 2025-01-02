@@ -1,11 +1,9 @@
 package ua.edu.sumdu.movielibrary.data
 
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
-
 
 class OnlineMovieRepository {
     private val auth: FirebaseAuth = Firebase.auth
