@@ -5,5 +5,5 @@ data class MovieUi(
     val description: String,
     val imageUrl: String,
     val director: String,
-    val genres: List<String> = emptyList()
+    val genres: Set<String> = emptySet()
 )

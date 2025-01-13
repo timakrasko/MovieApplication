@@ -9,6 +9,7 @@ data class MovieDto(
     val description: String = "",
     val imageUrl: String = "",
     val director: String = "",
+    val releaseYear: String = "",
     val genres: List<String> = listOf()
 )
 
@@ -18,6 +19,7 @@ fun Movie.toMovieDto(): MovieDto{
         description = description,
         imageUrl = imageUrl,
         director = director,
+        releaseYear = releaseYear,
         genres = genres
     )
 }

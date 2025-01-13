@@ -22,10 +22,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 
 @Composable
-fun MovieDetailsScreen(movie: MovieDto) {
+fun MovieDetailsScreen(
+    movie: MovieDto,
+) {
+    val viewModel: MovieDetailsViewModel = koinViewModel(parameters = { parametersOf(movie) })
+
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -6,11 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import ua.edu.sumdu.movielibrary.data.Dto.CreateScreenObject
 import ua.edu.sumdu.movielibrary.data.Dto.LoginScreenObject
 import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
+import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsScreen
 
 @Composable
@@ -20,7 +22,7 @@ fun MovieNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = LoginScreenObject,
+        startDestination = CreateScreenObject,
         modifier = modifier
     ) {
         composable<LoginScreenObject> {
@@ -38,6 +40,10 @@ fun MovieNavHost(
         composable<MovieDto> { backStackEntry ->
             val movie = backStackEntry.toRoute<MovieDto>()
             MovieDetailsScreen(movie)
+        }
+
+        composable<CreateScreenObject> {
+            MovieCreateScreen()
         }
     }
 }
