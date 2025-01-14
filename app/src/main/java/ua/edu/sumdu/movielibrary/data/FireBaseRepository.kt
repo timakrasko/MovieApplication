@@ -36,10 +36,8 @@ class FireBaseRepository : MovieRepository{
     override suspend fun uploadImageToStorage(uri: Uri): String {
         val storageReference = storage.reference
         val imageRef = storageReference.child("movie_images/${UUID.randomUUID()}.jpg")
-
         val uploadTask = imageRef.putFile(uri)
         uploadTask.await()
-
         val downloadUrl = imageRef.downloadUrl.await()
         return downloadUrl.toString()
     }

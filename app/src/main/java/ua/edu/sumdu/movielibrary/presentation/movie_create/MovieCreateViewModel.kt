@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Genre
 import ua.edu.sumdu.movielibrary.domain.Movie
@@ -45,14 +44,12 @@ class MovieCreateViewModel(
             _state.value.copy(selectedGenres = currentGenres + genre)
         }
     }
-
     fun createMovie() {
         val currentState = _state.value
         if (currentState.title.isBlank() || currentState.releaseYear.isBlank()) {
             _state.value = currentState.copy(errorMessage = "Title and Release Year are required")
             return
         }
-
         viewModelScope.launch {
             _state.value = currentState.copy(isLoading = true, errorMessage = null)
             try {
