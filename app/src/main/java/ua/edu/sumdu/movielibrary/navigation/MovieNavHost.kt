@@ -22,7 +22,7 @@ fun MovieNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = CreateScreenObject,
+        startDestination = LoginScreenObject,
         modifier = modifier
     ) {
         composable<LoginScreenObject> {
@@ -31,9 +31,14 @@ fun MovieNavHost(
             }
         }
         composable<MainScreenDataObject> {
-            MainScreen{ movie ->
-                navController.navigate(movie)
-            }
+            MainScreen(
+                navigateToMovieDetails =  { movie ->
+                    navController.navigate(movie)
+                },
+                navigateToMovieCreate = {
+                    navController.navigate(CreateScreenObject)
+                }
+            )
         }
 
 

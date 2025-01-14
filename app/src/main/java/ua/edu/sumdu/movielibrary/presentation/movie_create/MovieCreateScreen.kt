@@ -141,14 +141,7 @@ fun MovieCreateScreen() {
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = {
-                val movie = MovieDto(
-                    title = movieState.title,
-                    director = movieState.director,
-                    genres = movieState.selectedGenres.map { it.name },
-                    releaseYear = movieState.releaseYear,
-                    imageUrl = movieState.imageUri.toString()
-                )
-
+                viewModel.createMovie()
             },
             modifier = Modifier.align(Alignment.End)
         ) {

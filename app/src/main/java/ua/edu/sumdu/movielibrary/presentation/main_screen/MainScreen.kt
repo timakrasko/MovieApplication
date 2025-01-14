@@ -44,20 +44,19 @@ import ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu.BottomMenu
 import ua.edu.sumdu.movielibrary.ui.theme.PurpleGrey40
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import ua.edu.sumdu.movielibrary.data.Dto.CreateScreenObject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
-    navigateToMovieDetails: (MovieDto) -> Unit
+    navigateToMovieDetails: (MovieDto) -> Unit,
+    navigateToMovieCreate: (CreateScreenObject) -> Unit
 ) {
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-
-
     if (movieListState.isLoading) {
-
+         TODO()
     } else {
         ModalNavigationDrawer(
             modifier = Modifier.fillMaxWidth(),
@@ -76,21 +75,21 @@ fun MainScreen(
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    Button(
+                        onClick = { navigateToMovieCreate(CreateScreenObject) },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(text = "Add Movie")
+                    }
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+
                         items(movieListState.movies) { movie ->
                             MovieCard(movie, navigateToMovieDetails)
                         }
-                    }
-
-                    Button(
-                        onClick = {  },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(text = "Add Movie")
                     }
 
                     if (movieListState.isLoading) {

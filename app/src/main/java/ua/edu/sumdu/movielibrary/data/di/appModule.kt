@@ -13,6 +13,6 @@ val appModule = module {
     single<MovieRepository> {FireBaseRepository()}
 
     viewModel { MainViewModel(get()) }
-    viewModel { (movie: MovieDto) -> MovieDetailsViewModel(movie) }
+    viewModel { (movie: MovieDto) -> MovieDetailsViewModel(movie, get()) }
     viewModel { MovieCreateViewModel(get()) }
 }
