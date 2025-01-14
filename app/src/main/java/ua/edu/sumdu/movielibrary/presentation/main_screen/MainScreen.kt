@@ -1,6 +1,7 @@
 package ua.edu.sumdu.movielibrary.presentation.main_screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,11 +40,11 @@ import coil.compose.AsyncImage
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.Dto.toMovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
-import ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu.BottomMenu
 import ua.edu.sumdu.movielibrary.ui.theme.PurpleGrey40
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ua.edu.sumdu.movielibrary.data.Dto.CreateScreenObject
+import ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu.BottomMenu
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -56,7 +56,7 @@ fun MainScreen(
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
 
     if (movieListState.isLoading) {
-         TODO()
+         Log.d("123", "123")
     } else {
         ModalNavigationDrawer(
             modifier = Modifier.fillMaxWidth(),

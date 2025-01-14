@@ -1,7 +1,6 @@
 package ua.edu.sumdu.movielibrary.data.Dto
 
 import kotlinx.serialization.Serializable
-import ua.edu.sumdu.movielibrary.domain.Genre
 import ua.edu.sumdu.movielibrary.domain.Movie
 
 @Serializable
