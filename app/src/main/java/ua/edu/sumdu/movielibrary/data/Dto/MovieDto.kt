@@ -5,6 +5,7 @@ import ua.edu.sumdu.movielibrary.domain.Movie
 
 @Serializable
 data class MovieDto(
+    val id: String = "",
     val title: String = "",
     val description: String = "",
     val imageUrl: String = "",
@@ -15,6 +16,7 @@ data class MovieDto(
 
 fun Movie.toMovieDto(): MovieDto{
     return MovieDto(
+        id = id,
         title = title,
         description = description,
         imageUrl = imageUrl,

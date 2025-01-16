@@ -14,8 +14,6 @@ class MainViewModel(
     private val _movieListState = MutableStateFlow(MovieListState())
     val movieListState: StateFlow<MovieListState> = _movieListState
 
-//    private val _uiState = MutableStateFlow(MovieListState())
-//    val uiState: StateFlow<MovieListState> = _uiState
 
     init {
         fetchMovies()

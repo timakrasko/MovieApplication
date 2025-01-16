@@ -17,7 +17,9 @@ class FireBaseRepository : MovieRepository{
 
     override suspend fun getMovies(): List<Movie> {
         return try {
-            dataBase.get().await().documents.map { it.toObject(Movie::class.java)!! }
+            dataBase.get().await().documents.mapNotNull { document ->
+                document.toObject(Movie::class.java)?.copy(id = document.id) // Add document ID
+            }
         } catch (e: Exception) {
             emptyList()
         }
@@ -27,9 +29,14 @@ class FireBaseRepository : MovieRepository{
         dataBase.add(movie).await()
     }
 
-    override suspend fun deleteMovie(id: String) {
-        dataBase.whereEqualTo("id", id).get().await().documents.forEach {
-            it.reference.delete().await()
+    override suspend fun deleteMovie(id: String, imageUrl: String?) {
+        try {
+            dataBase.document(id).delete().await()
+            if (!imageUrl.isNullOrEmpty()) {
+                deleteImageFromStorage(imageUrl)
+            }
+        } catch (e: Exception) {
+            throw Exception("Failed to delete movie: ${e.localizedMessage}")
         }
     }
 
@@ -42,5 +49,10 @@ class FireBaseRepository : MovieRepository{
 
         val downloadUrl = imageRef.downloadUrl.await()
         return downloadUrl.toString()
+    }
+
+    private suspend fun deleteImageFromStorage(imageUrl: String) {
+        val storageRef = storage.getReferenceFromUrl(imageUrl)
+        storageRef.delete().await()
     }
 }
