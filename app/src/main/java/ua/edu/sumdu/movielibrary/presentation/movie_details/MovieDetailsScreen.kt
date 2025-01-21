@@ -30,6 +30,7 @@ import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 @Composable
 fun MovieDetailsScreen(
     movie: MovieDto,
+    onNavigateBack: () -> Unit,
 ) {
     val viewModel: MovieDetailsViewModel = koinViewModel(parameters = { parametersOf(movie) })
 
@@ -110,7 +111,7 @@ fun MovieDetailsScreen(
         )
 
         Text(
-            text = movie.description ?: "Description not available.",
+            text = movie.description,
             fontSize = 16.sp,
             lineHeight = 20.sp,
             modifier = Modifier.padding(horizontal = 8.dp)
@@ -119,6 +120,7 @@ fun MovieDetailsScreen(
         Button(
             onClick = {
                 viewModel.deleteMovie()
+                onNavigateBack()
             },
             modifier = Modifier.align(Alignment.End)
         ) {

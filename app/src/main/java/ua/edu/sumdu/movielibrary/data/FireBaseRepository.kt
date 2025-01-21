@@ -4,6 +4,9 @@ import android.net.Uri
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
@@ -15,13 +18,22 @@ class FireBaseRepository : MovieRepository{
     private val dataBase = Firebase.firestore.collection("movies")
     private val storage = Firebase.storage
 
-    override suspend fun getMovies(): List<Movie> {
-        return try {
-            dataBase.get().await().documents.mapNotNull { document ->
-                document.toObject(Movie::class.java)?.copy(id = document.id) // Add document ID
+    override suspend fun getMovies(): Flow<List<Movie>> {
+        return callbackFlow {
+            val listenerRegistration = dataBase.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                val movies = snapshot?.documents?.mapNotNull { document ->
+                    document.toObject(Movie::class.java)?.copy(id = document.id)
+                }.orEmpty()
+
+                trySend(movies)
             }
-        } catch (e: Exception) {
-            emptyList()
+
+            awaitClose { listenerRegistration.remove() }
         }
     }
 

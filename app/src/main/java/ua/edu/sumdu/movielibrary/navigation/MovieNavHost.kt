@@ -44,11 +44,13 @@ fun MovieNavHost(
 
         composable<MovieDto> { backStackEntry ->
             val movie = backStackEntry.toRoute<MovieDto>()
-            MovieDetailsScreen(movie)
+            MovieDetailsScreen(
+                movie
+            ) { navController.popBackStack() }
         }
 
         composable<CreateScreenObject> {
-            MovieCreateScreen()
+            MovieCreateScreen{ navController.popBackStack() }
         }
     }
 }

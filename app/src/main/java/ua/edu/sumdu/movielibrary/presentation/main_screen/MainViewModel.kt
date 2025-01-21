@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
@@ -16,26 +18,28 @@ class MainViewModel(
 
 
     init {
-        fetchMovies()
+        observeMovies()
     }
 
-    fun fetchMovies() {
+    private fun observeMovies() {
         viewModelScope.launch {
-            _movieListState.value = _movieListState.value.copy(isLoading = true)
-
-            try {
-                val movies = repository.getMovies()
-                _movieListState.value = MovieListState(isLoading = false, movies = movies)
-            } catch (e: Exception) {
-                _movieListState.value = MovieListState(isLoading = false, errorMessage = e.message)
-            }
-        }
-    }
-
-    fun addMovie(movie: Movie) {
-        viewModelScope.launch {
-            repository.addMovie(movie)
-            fetchMovies()
+            repository.getMovies()
+                .onStart {
+                    _movieListState.value = _movieListState.value.copy(isLoading = true)
+                }
+                .catch { e ->
+                    _movieListState.value = _movieListState.value.copy(
+                        isLoading = false,
+                        errorMessage = e.message
+                    )
+                }
+                .collect { movies ->
+                    _movieListState.value = _movieListState.value.copy(
+                        isLoading = false,
+                        movies = movies,
+                        errorMessage = null
+                    )
+                }
         }
     }
 }
