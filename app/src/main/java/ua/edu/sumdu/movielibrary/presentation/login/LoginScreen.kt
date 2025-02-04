@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.edu.sumdu.movielibrary.R
 import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.Dto.UserProfileScreenDataObject
 import ua.edu.sumdu.movielibrary.data.OnlineMovieRepository
 
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(),
-    onNavigationToMainScreen: (MainScreenDataObject) -> Unit
+    onNavigationToMainScreen: (MainScreenDataObject) -> Unit,
+    onNavigateToUserScreen: (UserProfileScreenDataObject) -> Unit
 ) {
     val loginUiState by loginViewModel.uiState.collectAsState()
 
@@ -41,9 +43,9 @@ fun LoginScreen(
     //КАСТЫЛЬ
     val onlineMovieRepository = OnlineMovieRepository()
     val fb = onlineMovieRepository.isSignedIn()
-    if (fb.currentUser != null){
-        onNavigationToMainScreen(MainScreenDataObject(fb.currentUser?.uid?: "", fb.currentUser?.email?: ""))
-    }
+//    if (fb.currentUser != null){
+//        onNavigationToMainScreen(MainScreenDataObject(fb.currentUser?.uid?: "", fb.currentUser?.email?: ""))
+//    }
     //ДО СИХ ПОР КАСТЫЛЬ
 
     Image(
@@ -90,8 +92,8 @@ fun LoginScreen(
         }
 
         LoginButton(text = "Sign in") {
-            loginViewModel.signIn { navData ->
-                onNavigationToMainScreen(navData)
+            loginViewModel.signIn {
+                onNavigateToUserScreen(UserProfileScreenDataObject)
             }
         }
         LoginButton(text = "Sign up") {

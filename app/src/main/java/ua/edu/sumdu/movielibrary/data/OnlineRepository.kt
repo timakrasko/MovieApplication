@@ -3,6 +3,7 @@ package ua.edu.sumdu.movielibrary.data
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
 
 class OnlineMovieRepository {
@@ -27,6 +28,7 @@ class OnlineMovieRepository {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result.user?.let { user ->
+                        createUserInFirestoreIfNotExists(user.uid, user.email!!)
                         onSignUpSuccess(MainScreenDataObject(user.uid, user.email!!))
                     }
                 }
@@ -58,5 +60,19 @@ class OnlineMovieRepository {
             .addOnFailureListener {
                 onSignInFailure(it.message ?: "Sign In Error")
             }
+    }
+
+    fun createUserInFirestoreIfNotExists(userId: String, email: String) {
+        val userRef = Firebase.firestore.collection("users").document(userId)
+
+        userRef.get().addOnSuccessListener { document ->
+            if (!document.exists()) {
+                val user = hashMapOf(
+                    "email" to email,
+                    "createdAt" to System.currentTimeMillis()
+                )
+                userRef.set(user)
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
 import java.util.UUID
@@ -66,5 +67,40 @@ class FireBaseRepository : MovieRepository{
     private suspend fun deleteImageFromStorage(imageUrl: String) {
         val storageRef = storage.getReferenceFromUrl(imageUrl)
         storageRef.delete().await()
+    }
+
+    override suspend fun markMovieAsWatched(userId: String, movie: MovieDto) {
+        val userWatchedRef = Firebase.firestore.collection("users")
+            .document(userId)
+            .collection("watched_movies")
+            .document(movie.id)
+
+        try {
+            userWatchedRef.set(movie).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to mark movie as watched: ${e.localizedMessage}")
+        }
+    }
+
+    override suspend fun getWatchedMovies(userId: String): Flow<List<Movie>> {
+        return callbackFlow {
+            val watchedMoviesRef = Firebase.firestore.collection("users").document(userId)
+                .collection("watched_movies")
+
+            val listenerRegistration = watchedMoviesRef.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                val movies = snapshot?.documents?.mapNotNull { document ->
+                    document.toObject(Movie::class.java)?.copy(id = document.id)
+                }.orEmpty()
+
+                trySend(movies)
+            }
+
+            awaitClose { listenerRegistration.remove() }
+        }
     }
 }
