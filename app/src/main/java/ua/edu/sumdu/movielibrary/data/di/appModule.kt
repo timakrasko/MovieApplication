@@ -1,5 +1,6 @@
 package ua.edu.sumdu.movielibrary.data.di
 
+import com.google.firebase.auth.FirebaseUser
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
@@ -8,11 +9,13 @@ import ua.edu.sumdu.movielibrary.data.FireBaseRepository
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsViewModel
+import ua.edu.sumdu.movielibrary.presentation.user_profile.UserProfileViewModel
 
 val appModule = module {
     single<MovieRepository> {FireBaseRepository()}
 
     viewModel { MainViewModel(get()) }
-    viewModel { (movie: MovieDto) -> MovieDetailsViewModel(movie)}
+    viewModel { (movie: MovieDto) -> MovieDetailsViewModel(movie, get())}
     viewModel { MovieCreateViewModel(get()) }
+    viewModel { (user: FirebaseUser) -> UserProfileViewModel(user, get())}
 }

@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +44,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ua.edu.sumdu.movielibrary.domain.Genre
 import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MovieCreateScreen() {
+fun MovieCreateScreen(
+        onNavigateBack: () -> Unit,
+    ) {
     val viewModel: MovieCreateViewModel = koinViewModel()
     val movieState by viewModel.state.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
 
     val allGenres = Genre.entries
 
@@ -140,8 +145,13 @@ fun MovieCreateScreen() {
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = {
-                viewModel.createMovie()
+                coroutineScope.launch {
+                    viewModel.createMovie()
+
+                        onNavigateBack()
+                }
             },
+            enabled = !movieState.isLoading,
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(text = "Create Movie")

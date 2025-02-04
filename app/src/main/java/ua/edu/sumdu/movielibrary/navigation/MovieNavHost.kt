@@ -10,10 +10,12 @@ import ua.edu.sumdu.movielibrary.data.Dto.CreateScreenObject
 import ua.edu.sumdu.movielibrary.data.Dto.LoginScreenObject
 import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.Dto.UserProfileScreenDataObject
 import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsScreen
+import ua.edu.sumdu.movielibrary.presentation.user_profile.UserProfileScreen
 
 @Composable
 fun MovieNavHost(
@@ -26,10 +28,16 @@ fun MovieNavHost(
         modifier = modifier
     ) {
         composable<LoginScreenObject> {
-            LoginScreen { navData ->
-                navController.navigate(navData)
-            }
+            LoginScreen (
+                onNavigateToUserScreen = {
+                    navController.navigate(UserProfileScreenDataObject)
+                },
+                onNavigationToMainScreen = { navData ->
+                    navController.navigate(navData)
+                }
+            )
         }
+
         composable<MainScreenDataObject> {
             MainScreen(
                 navigateToMovieDetails =  { movie ->
@@ -44,11 +52,17 @@ fun MovieNavHost(
 
         composable<MovieDto> { backStackEntry ->
             val movie = backStackEntry.toRoute<MovieDto>()
-            MovieDetailsScreen(movie)
+            MovieDetailsScreen(
+                movie
+            ) { navController.popBackStack() }
         }
 
         composable<CreateScreenObject> {
-            MovieCreateScreen()
+            MovieCreateScreen{ navController.popBackStack() }
+        }
+
+        composable<UserProfileScreenDataObject> {
+            UserProfileScreen()
         }
     }
 }
