@@ -70,7 +70,7 @@ fun MainScreen(
         ) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                bottomBar = { BottomMenu() }
+//                bottomBar = { BottomMenu() }
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize()

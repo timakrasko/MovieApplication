@@ -29,7 +29,7 @@ class OnlineMovieRepository {
                 if (task.isSuccessful) {
                     task.result.user?.let { user ->
                         createUserInFirestoreIfNotExists(user.uid, user.email!!)
-                        onSignUpSuccess(MainScreenDataObject(user.uid, user.email!!))
+                        onSignUpSuccess(MainScreenDataObject)
                     }
                 }
             }
@@ -53,7 +53,7 @@ class OnlineMovieRepository {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result.user?.let { user ->
-                        onSignInSuccess(MainScreenDataObject(user.uid, user.email!!))
+                        onSignInSuccess(MainScreenDataObject)
                     }
                 }
             }

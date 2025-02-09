@@ -17,13 +17,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             MovieLibraryTheme {
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val navController = rememberNavController()
+                val navController = rememberNavController()
 
-                    MovieNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
-                }
-
+                MovieNavHost(navController = navController)
             }
+
         }
     }
 }

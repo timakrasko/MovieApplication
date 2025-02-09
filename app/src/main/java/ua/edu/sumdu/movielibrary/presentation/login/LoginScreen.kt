@@ -92,8 +92,8 @@ fun LoginScreen(
         }
 
         LoginButton(text = "Sign in") {
-            loginViewModel.signIn {
-                onNavigateToUserScreen(UserProfileScreenDataObject)
+            loginViewModel.signIn { navData ->
+                onNavigationToMainScreen(navData)
             }
         }
         LoginButton(text = "Sign up") {
