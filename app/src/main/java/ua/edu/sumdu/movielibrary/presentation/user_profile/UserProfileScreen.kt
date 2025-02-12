@@ -24,16 +24,15 @@ import com.google.firebase.auth.auth
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ua.edu.sumdu.movielibrary.domain.Movie
-import ua.edu.sumdu.movielibrary.presentation.main_screen.MovieCard
-import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsViewModel
 
 @Composable
 fun UserProfileScreen(
 
 ) {
-    val user = Firebase.auth.currentUser
-    val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(user) })
+    val userId = Firebase.auth.currentUser?.uid
+    val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(userId) })
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
+    val user by viewModel.user.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier

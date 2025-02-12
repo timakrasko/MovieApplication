@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
+import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
 
 class MainViewModel(

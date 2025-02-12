@@ -26,23 +26,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import ua.edu.sumdu.movielibrary.R
 import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.Dto.UserProfileScreenDataObject
-import ua.edu.sumdu.movielibrary.data.OnlineMovieRepository
 
 @Composable
 fun LoginScreen(
-    loginViewModel: LoginViewModel = viewModel(),
     onNavigationToMainScreen: (MainScreenDataObject) -> Unit,
     onNavigateToUserScreen: (UserProfileScreenDataObject) -> Unit
 ) {
-    val loginUiState by loginViewModel.uiState.collectAsState()
+    val viewModel: LoginViewModel = koinViewModel()
+    val loginUiState by viewModel.uiState.collectAsState()
 
 
     //КАСТЫЛЬ
-    val onlineMovieRepository = OnlineMovieRepository()
-    val fb = onlineMovieRepository.isSignedIn()
+    val fb = viewModel.isUserSignedIn()
 //    if (fb.currentUser != null){
 //        onNavigationToMainScreen(MainScreenDataObject(fb.currentUser?.uid?: "", fb.currentUser?.email?: ""))
 //    }
@@ -70,7 +69,7 @@ fun LoginScreen(
             label = "Email",
 
             ) {
-            loginViewModel.setEmail(it)
+            viewModel.setEmail(it)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -79,7 +78,7 @@ fun LoginScreen(
             text = loginUiState.password,
             label = "Password",
         ) {
-            loginViewModel.setPassword(it)
+            viewModel.setPassword(it)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -91,37 +90,17 @@ fun LoginScreen(
             )
         }
 
-        LoginButton(text = "Sign in") {
-            loginViewModel.signIn { navData ->
-                onNavigationToMainScreen(navData)
-            }
-        }
-        LoginButton(text = "Sign up") {
-            loginViewModel.signUp { navData ->
-                onNavigationToMainScreen(navData)
-            }
-        }
+        Button(
+            onClick = { viewModel.signIn(onNavigationToMainScreen) }
+        ) { Text("Sign In") }
+
+        Button(
+            onClick = { viewModel.signUp(onNavigationToMainScreen) }
+        ) { Text("Sign Up") }
     }
 
 }
 
-@Composable
-fun LoginButton(
-    text: String,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = {
-            onClick()
-        },
-        modifier = Modifier.fillMaxWidth(0.5f),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.DarkGray,
-        )
-    ) {
-        Text(text = text, color = Color.White)
-    }
-}
 
 @Composable
 fun RoundedCornerTextField(

@@ -1,6 +1,5 @@
 package ua.edu.sumdu.movielibrary.presentation.movie_details
 
-import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContentProviderCompat.requireContext
 import coil.compose.AsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

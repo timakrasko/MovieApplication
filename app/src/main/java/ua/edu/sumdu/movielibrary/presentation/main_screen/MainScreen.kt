@@ -44,7 +44,6 @@ import ua.edu.sumdu.movielibrary.ui.theme.PurpleGrey40
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ua.edu.sumdu.movielibrary.data.Dto.CreateScreenObject
-import ua.edu.sumdu.movielibrary.presentation.main_screen.bottom_menu.BottomMenu
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

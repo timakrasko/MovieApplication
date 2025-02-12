@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
+import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
 import ua.edu.sumdu.movielibrary.domain.Genre
 import ua.edu.sumdu.movielibrary.domain.Movie
 

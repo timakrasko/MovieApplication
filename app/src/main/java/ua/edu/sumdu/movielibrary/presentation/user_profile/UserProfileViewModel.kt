@@ -1,32 +1,43 @@
 package ua.edu.sumdu.movielibrary.presentation.user_profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
-import ua.edu.sumdu.movielibrary.data.Dto.MovieRepository
-import ua.edu.sumdu.movielibrary.domain.Movie
+import ua.edu.sumdu.movielibrary.data.repository.UserRepository
+import ua.edu.sumdu.movielibrary.domain.User
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MovieListState
 
 class UserProfileViewModel(
-    private val user: FirebaseUser,
-    private val repository: MovieRepository,
-): ViewModel() {
+    private val userId: String,
+    private val userRepository: UserRepository,
+) : ViewModel() {
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
+
     private val _movieListState = MutableStateFlow(MovieListState())
     val movieListState: StateFlow<MovieListState> = _movieListState
+
     init {
+        loadUser()
         getWatchedMovies()
     }
 
-    fun getWatchedMovies() {
+    private fun loadUser() {
         viewModelScope.launch {
-            repository.getWatchedMovies(userId = user.uid)
+            userRepository.getUserById(userId).collect { userData ->
+                _user.value = userData
+            }
+        }
+    }
+
+    private fun getWatchedMovies() {
+        viewModelScope.launch {
+            userRepository.getWatchedMovies(userId)
                 .onStart {
                     _movieListState.value = _movieListState.value.copy(isLoading = true)
                 }
