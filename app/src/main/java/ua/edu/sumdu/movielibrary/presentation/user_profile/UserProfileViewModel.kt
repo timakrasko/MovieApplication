@@ -36,29 +36,16 @@ class UserProfileViewModel(
 
             userFlow.collect { userData ->
                 _user.value = userData
-                getWatchedMovies() // Call after user is loaded
+                getWatchedMovies()
             }
         }
     }
 
-//    private fun loadUser() {
-//        viewModelScope.launch {
-//            if (userId.isNullOrEmpty()) {
-//                userRepository.getCurrentUser().collect { userData ->
-//                    _user.value = userData
-//                }
-//            } else {
-//                userRepository.getUserById(userId).collect { userData ->
-//                    _user.value = userData
-//                }
-//            }
-//        }
-//    }
 
     private fun getWatchedMovies() {
         viewModelScope.launch {
-            if (userId != null) {
-                userRepository.getWatchedMovies(userId)
+            if (user.value?.uid  != null) {
+                userRepository.getWatchedMovies(user.value!!.uid)
                     .onStart {
                         _movieListState.value = _movieListState.value.copy(isLoading = true)
                     }

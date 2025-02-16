@@ -23,7 +23,6 @@ import ua.edu.sumdu.movielibrary.data.dto.LoginScreenObject
 import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.dto.UserDto
-import ua.edu.sumdu.movielibrary.data.dto.UserProfileScreenDataObject
 import ua.edu.sumdu.movielibrary.data.dto.UsersScreenObject
 import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
@@ -39,7 +38,7 @@ fun MovieNavHost(
 ) {
     val topLevelRoutes = listOf(
         TopLevelRoute("Main", MainScreenDataObject),
-        TopLevelRoute("Profile", UserProfileScreenDataObject),
+        TopLevelRoute("Profile", UserDto()),
         TopLevelRoute("Users", UsersScreenObject)
     )
     Scaffold(
@@ -130,12 +129,11 @@ fun MovieNavHost(
             composable<UserDto> { backStackEntry ->
                 val user = backStackEntry.toRoute<UserDto>()
                 UserProfileScreen(
-                    user
+                    user,
+                    navigateToMovieDetails = { movie ->
+                        navController.navigate(movie)
+                    },
                 )
-            }
-
-            composable<UserProfileScreenDataObject> {
-                UserProfileScreen()
             }
         }
     }

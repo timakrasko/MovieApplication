@@ -9,8 +9,8 @@ data class UserDto(
     val email: String = "",
     val username: String = "",
     val watchedList: List<String> = listOf(),
-    val createdAt: Long = 0,
-    val imageUrl: String? = null
+    val createdAt: String = "",
+    val imageUrl: String = ""
 )
 
 fun User.toUserDto(): UserDto{

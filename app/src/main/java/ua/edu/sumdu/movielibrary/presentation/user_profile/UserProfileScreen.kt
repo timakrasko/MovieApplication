@@ -21,16 +21,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.dto.UserDto
+import ua.edu.sumdu.movielibrary.data.dto.toMovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
 
 @Composable
 fun UserProfileScreen(
-    userDto: UserDto
+    userDto: UserDto,
+    navigateToMovieDetails: (MovieDto) -> Unit,
 ) {
     val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(userDto.uid) })
-    val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
     val user by viewModel.user.collectAsStateWithLifecycle()
+    val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -66,7 +69,7 @@ fun UserProfileScreen(
             modifier = Modifier.weight(1f)
         ) {
             items(movieListState.movies) { movie ->
-                MovieItem(movie)
+                MovieItem(movie, navigateToMovieDetails)
             }
         }
 
@@ -85,14 +88,17 @@ fun UserProfileScreen(
 }
 
 @Composable
-fun MovieItem(movie: Movie) {
+fun MovieItem(
+    movie: Movie,
+    navigateToMovieDetails: (MovieDto) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-            .clickable { /* Navigate to movie details */ }
-            .padding(8.dp)
+            .clickable { navigateToMovieDetails(movie.toMovieDto()) }
+            .padding(8.dp),
     ) {
         AsyncImage(
             model = movie.imageUrl,
