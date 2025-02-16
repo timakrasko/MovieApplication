@@ -19,18 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ua.edu.sumdu.movielibrary.data.dto.UserDto
 import ua.edu.sumdu.movielibrary.domain.Movie
 
 @Composable
 fun UserProfileScreen(
-
+    userDto: UserDto
 ) {
-    val userId = Firebase.auth.currentUser?.uid
-    val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(userId) })
+    val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(userDto.uid) })
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
     val user by viewModel.user.collectAsStateWithLifecycle()
 

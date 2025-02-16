@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 
 class OnlineMovieRepository(
     private val auth: FirebaseAuth,

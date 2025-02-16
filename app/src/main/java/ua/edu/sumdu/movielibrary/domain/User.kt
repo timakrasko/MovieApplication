@@ -5,6 +5,6 @@ data class User(
     val email: String = "",
     val username: String = "",
     val watchedList: List<String> = listOf(),
-    val createdAt: Int = 0,
+    val createdAt: Long = 0,
     val imageUrl: String? = null
 )

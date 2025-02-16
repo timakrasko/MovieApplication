@@ -6,7 +6,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.repository.FireBaseMovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.FireBaseUserRepository
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
@@ -17,6 +17,7 @@ import ua.edu.sumdu.movielibrary.presentation.main_screen.MainViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsViewModel
 import ua.edu.sumdu.movielibrary.presentation.user_profile.UserProfileViewModel
+import ua.edu.sumdu.movielibrary.presentation.users.UsersViewModel
 
 val appModule = module {
     single { Firebase.storage }
@@ -27,6 +28,7 @@ val appModule = module {
     single<OnlineMovieRepository> {OnlineMovieRepository(get(), get())}
     viewModel {LoginViewModel(get())}
     viewModel { MainViewModel(get()) }
+    viewModel { UsersViewModel(get()) }
     viewModel { (movie: MovieDto) -> MovieDetailsViewModel(movie, get(), get())}
     viewModel { MovieCreateViewModel(get()) }
     viewModel { (user: String) -> UserProfileViewModel(user, get())}

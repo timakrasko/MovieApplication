@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.repository.OnlineMovieRepository
 
 

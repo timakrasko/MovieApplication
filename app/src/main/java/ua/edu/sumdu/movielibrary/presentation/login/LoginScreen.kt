@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -25,17 +24,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.koin.androidx.compose.koinViewModel
 import ua.edu.sumdu.movielibrary.R
-import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
-import ua.edu.sumdu.movielibrary.data.Dto.UserProfileScreenDataObject
+import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 
 @Composable
 fun LoginScreen(
-    onNavigationToMainScreen: (MainScreenDataObject) -> Unit,
-    onNavigateToUserScreen: (UserProfileScreenDataObject) -> Unit
-) {
+    onNavigationToMainScreen: (MainScreenDataObject) -> Unit, ) {
     val viewModel: LoginViewModel = koinViewModel()
     val loginUiState by viewModel.uiState.collectAsState()
 

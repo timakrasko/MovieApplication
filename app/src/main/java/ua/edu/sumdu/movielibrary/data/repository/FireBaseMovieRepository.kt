@@ -12,7 +12,7 @@ import java.util.UUID
 
 
 class FireBaseMovieRepository(
-    private val firestore: FirebaseFirestore,
+    firestore: FirebaseFirestore,
     private val storage: FirebaseStorage
 ) : MovieRepository {
 

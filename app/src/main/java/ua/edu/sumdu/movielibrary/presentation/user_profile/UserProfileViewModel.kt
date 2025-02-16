@@ -1,6 +1,5 @@
 package ua.edu.sumdu.movielibrary.presentation.user_profile
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +12,7 @@ import ua.edu.sumdu.movielibrary.domain.User
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MovieListState
 
 class UserProfileViewModel(
-    private val userId: String,
+    private val userId: String?,
     private val userRepository: UserRepository,
 ) : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
@@ -29,31 +28,54 @@ class UserProfileViewModel(
 
     private fun loadUser() {
         viewModelScope.launch {
-            userRepository.getUserById(userId).collect { userData ->
+            val userFlow = if (userId.isNullOrEmpty()) {
+                userRepository.getCurrentUser()
+            } else {
+                userRepository.getUserById(userId)
+            }
+
+            userFlow.collect { userData ->
                 _user.value = userData
+                getWatchedMovies() // Call after user is loaded
             }
         }
     }
 
+//    private fun loadUser() {
+//        viewModelScope.launch {
+//            if (userId.isNullOrEmpty()) {
+//                userRepository.getCurrentUser().collect { userData ->
+//                    _user.value = userData
+//                }
+//            } else {
+//                userRepository.getUserById(userId).collect { userData ->
+//                    _user.value = userData
+//                }
+//            }
+//        }
+//    }
+
     private fun getWatchedMovies() {
         viewModelScope.launch {
-            userRepository.getWatchedMovies(userId)
-                .onStart {
-                    _movieListState.value = _movieListState.value.copy(isLoading = true)
-                }
-                .catch { e ->
-                    _movieListState.value = _movieListState.value.copy(
-                        isLoading = false,
-                        errorMessage = e.message
-                    )
-                }
-                .collect { movies ->
-                    _movieListState.value = _movieListState.value.copy(
-                        isLoading = false,
-                        movies = movies,
-                        errorMessage = null
-                    )
-                }
+            if (userId != null) {
+                userRepository.getWatchedMovies(userId)
+                    .onStart {
+                        _movieListState.value = _movieListState.value.copy(isLoading = true)
+                    }
+                    .catch { e ->
+                        _movieListState.value = _movieListState.value.copy(
+                            isLoading = false,
+                            errorMessage = e.message
+                        )
+                    }
+                    .collect { movies ->
+                        _movieListState.value = _movieListState.value.copy(
+                            isLoading = false,
+                            movies = movies,
+                            errorMessage = null
+                        )
+                    }
+            }
         }
     }
 }

@@ -18,16 +18,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import ua.edu.sumdu.movielibrary.R
-import ua.edu.sumdu.movielibrary.data.Dto.CreateScreenObject
-import ua.edu.sumdu.movielibrary.data.Dto.LoginScreenObject
-import ua.edu.sumdu.movielibrary.data.Dto.MainScreenDataObject
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
-import ua.edu.sumdu.movielibrary.data.Dto.UserProfileScreenDataObject
+import ua.edu.sumdu.movielibrary.data.dto.CreateScreenObject
+import ua.edu.sumdu.movielibrary.data.dto.LoginScreenObject
+import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
+import ua.edu.sumdu.movielibrary.data.dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.dto.UserDto
+import ua.edu.sumdu.movielibrary.data.dto.UserProfileScreenDataObject
+import ua.edu.sumdu.movielibrary.data.dto.UsersScreenObject
 import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsScreen
 import ua.edu.sumdu.movielibrary.presentation.user_profile.UserProfileScreen
+import ua.edu.sumdu.movielibrary.presentation.users.UsersScreen
 
 @Composable
 fun MovieNavHost(
@@ -35,8 +38,9 @@ fun MovieNavHost(
     modifier: Modifier = Modifier,
 ) {
     val topLevelRoutes = listOf(
-        TopLevelRoute("Profile", MainScreenDataObject),
-        TopLevelRoute("Friends", UserProfileScreenDataObject)
+        TopLevelRoute("Main", MainScreenDataObject),
+        TopLevelRoute("Profile", UserProfileScreenDataObject),
+        TopLevelRoute("Users", UsersScreenObject)
     )
     Scaffold(
         bottomBar = {
@@ -86,9 +90,6 @@ fun MovieNavHost(
         ) {
             composable<LoginScreenObject> {
                 LoginScreen(
-                    onNavigateToUserScreen = {
-                        navController.navigate(UserProfileScreenDataObject)
-                    },
                     onNavigationToMainScreen = { navData ->
                         navController.navigate(navData)
                     }
@@ -106,6 +107,14 @@ fun MovieNavHost(
                 )
             }
 
+            composable<UsersScreenObject> {
+                UsersScreen(
+                    navigateToUserProfile = { user ->
+                        navController.navigate(user)
+                    }
+                )
+            }
+
 
             composable<MovieDto> { backStackEntry ->
                 val movie = backStackEntry.toRoute<MovieDto>()
@@ -116,6 +125,13 @@ fun MovieNavHost(
 
             composable<CreateScreenObject> {
                 MovieCreateScreen { navController.popBackStack() }
+            }
+
+            composable<UserDto> { backStackEntry ->
+                val user = backStackEntry.toRoute<UserDto>()
+                UserProfileScreen(
+                    user
+                )
             }
 
             composable<UserProfileScreenDataObject> {

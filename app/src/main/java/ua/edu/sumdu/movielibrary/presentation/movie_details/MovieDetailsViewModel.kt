@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
 

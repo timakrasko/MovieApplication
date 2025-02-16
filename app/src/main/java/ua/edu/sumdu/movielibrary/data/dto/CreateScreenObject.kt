@@ -1,4 +1,4 @@
-package ua.edu.sumdu.movielibrary.data.Dto
+package ua.edu.sumdu.movielibrary.data.dto
 
 import kotlinx.serialization.Serializable
 

@@ -27,7 +27,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 
 @Composable
 fun MovieDetailsScreen(

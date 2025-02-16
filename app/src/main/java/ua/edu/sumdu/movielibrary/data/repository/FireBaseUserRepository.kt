@@ -1,32 +1,32 @@
 package ua.edu.sumdu.movielibrary.data.repository
 
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import ua.edu.sumdu.movielibrary.data.Dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
 import ua.edu.sumdu.movielibrary.domain.User
 
 class FireBaseUserRepository(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    firestore: FirebaseFirestore
 ): UserRepository {
+
+    private val userCollection = firestore.collection("users")
+
     override suspend fun saveUser(user: User) {
-        firestore.collection("users").document(user.uid).set(user).await()
+        userCollection.document(user.uid).set(user).await()
     }
 
-    override suspend fun getCurrentUser(): User {
-        return TODO()
+    override suspend fun getCurrentUser(): Flow<User?> {
+        return getUserById(auth.currentUser!!.uid)
     }
 
     override suspend fun getUserById(userId: String): Flow<User?> = callbackFlow {
-        val userRef = firestore.collection("users").document(userId)
+        val userRef = userCollection.document(userId)
 
         val listener = userRef.addSnapshotListener { snapshot, exception ->
             if (exception != null) {
@@ -41,8 +41,27 @@ class FireBaseUserRepository(
         awaitClose { listener.remove() }
     }
 
+    override suspend fun getUsers(): Flow<List<User>> {
+        return callbackFlow {
+            val listenerRegistration = userCollection.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                val users = snapshot?.documents?.mapNotNull { document ->
+                    document.toObject(User::class.java)?.copy(uid = document.id)
+                }.orEmpty()
+
+                trySend(users)
+            }
+
+            awaitClose { listenerRegistration.remove() }
+        }
+    }
+
     override suspend fun markMovieAsWatched(userId: String, movie: MovieDto) {
-        val userWatchedRef = Firebase.firestore.collection("users")
+        val userWatchedRef = userCollection
             .document(userId)
             .collection("watched_movies")
             .document(movie.id)
@@ -56,7 +75,7 @@ class FireBaseUserRepository(
 
     override suspend fun getWatchedMovies(userId: String): Flow<List<Movie>> {
         return callbackFlow {
-            val watchedMoviesRef = Firebase.firestore.collection("users").document(userId)
+            val watchedMoviesRef = userCollection.document(userId)
                 .collection("watched_movies")
 
             val listenerRegistration = watchedMoviesRef.addSnapshotListener { snapshot, exception ->
