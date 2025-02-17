@@ -32,8 +32,8 @@ fun UserProfileScreen(
     navigateToMovieDetails: (MovieDto) -> Unit,
 ) {
     val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(userDto.uid) })
-    val user by viewModel.user.collectAsStateWithLifecycle()
-    val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val user = state.user
 
     Column(
         modifier = Modifier
@@ -68,7 +68,7 @@ fun UserProfileScreen(
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
-            items(movieListState.movies) { movie ->
+            items(state.movies) { movie ->
                 MovieItem(movie, navigateToMovieDetails)
             }
         }

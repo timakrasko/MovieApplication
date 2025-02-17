@@ -17,9 +17,8 @@ class MovieDetailsViewModel(
         viewModelScope.launch {
             try {
                 movieRepository.deleteMovie(movie.id, movie.imageUrl)
-                Log.d("21223", "12223")
             } catch (e: Exception) {
-                Log.d("213", "123")
+                Log.e("MovieViewModel", "Error loading movie: ${e.message}")
             }
         }
     }

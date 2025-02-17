@@ -2,24 +2,23 @@ package ua.edu.sumdu.movielibrary.presentation.user_profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
+import ua.edu.sumdu.movielibrary.domain.Movie
 import ua.edu.sumdu.movielibrary.domain.User
-import ua.edu.sumdu.movielibrary.presentation.main_screen.MovieListState
 
 class UserProfileViewModel(
     private val userId: String?,
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user
 
-    private val _movieListState = MutableStateFlow(MovieListState())
-    val movieListState: StateFlow<MovieListState> = _movieListState
+    private val _uiState = MutableStateFlow(UserProfileState())
+    val uiState: StateFlow<UserProfileState> = _uiState
 
     init {
         loadUser()
@@ -28,14 +27,17 @@ class UserProfileViewModel(
 
     private fun loadUser() {
         viewModelScope.launch {
-            val userFlow = if (userId.isNullOrEmpty()) {
-                userRepository.getCurrentUser()
+            val userFlow: Flow<User?>
+            if (userId.isNullOrEmpty()) {
+                userFlow = userRepository.getCurrentUser()
+                _uiState.value = _uiState.value.copy(isCurrentAuthorizedUser = true)
             } else {
-                userRepository.getUserById(userId)
+                userFlow = userRepository.getUserById(userId)
             }
 
             userFlow.collect { userData ->
-                _user.value = userData
+                _uiState.value = _uiState.value.copy(
+                    user = userData)
                 getWatchedMovies()
             }
         }
@@ -44,19 +46,19 @@ class UserProfileViewModel(
 
     private fun getWatchedMovies() {
         viewModelScope.launch {
-            if (user.value?.uid  != null) {
-                userRepository.getWatchedMovies(user.value!!.uid)
+            if (_uiState.value.user?.uid  != null) {
+                userRepository.getWatchedMovies(_uiState.value.user!!.uid)
                     .onStart {
-                        _movieListState.value = _movieListState.value.copy(isLoading = true)
+                        _uiState.value = _uiState.value.copy(isLoading = true)
                     }
                     .catch { e ->
-                        _movieListState.value = _movieListState.value.copy(
+                        _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             errorMessage = e.message
                         )
                     }
                     .collect { movies ->
-                        _movieListState.value = _movieListState.value.copy(
+                        _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             movies = movies,
                             errorMessage = null
@@ -66,3 +68,12 @@ class UserProfileViewModel(
         }
     }
 }
+
+data class UserProfileState(
+    val isCurrentAuthorizedUser: Boolean = false,
+    val user: User? = null,
+    val movies: List<Movie> = emptyList(),
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+)
+
