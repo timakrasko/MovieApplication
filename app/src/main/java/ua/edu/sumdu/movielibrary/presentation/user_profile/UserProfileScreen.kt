@@ -68,7 +68,26 @@ fun UserProfileScreen(
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
-            items(state.movies) { movie ->
+            items(state.watchedMovies) { movie ->
+                MovieItem(movie, navigateToMovieDetails)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = state.planedMovies.isEmpty().toString(),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyColumn(
+            modifier = Modifier.weight(1f)
+        ) {
+            items(state.planedMovies) { movie ->
                 MovieItem(movie, navigateToMovieDetails)
             }
         }

@@ -141,5 +141,17 @@ fun MovieDetailsScreen(
         ) {
             Text(text = "Add to watched")
         }
+
+        Button(
+            onClick = {
+                val userId = Firebase.auth.currentUser?.uid
+                if (userId != null) {
+                    viewModel.markMovieAsPlaned(userId, movie)
+                }
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(text = "Add to planed")
+        }
     }
 }

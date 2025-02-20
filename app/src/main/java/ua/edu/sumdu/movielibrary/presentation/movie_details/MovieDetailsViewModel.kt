@@ -31,4 +31,14 @@ class MovieDetailsViewModel(
             }
         }
     }
+
+    fun markMovieAsPlaned(userId: String, movie: MovieDto) {
+        viewModelScope.launch {
+            try {
+                userRepository.markMovieAsPlaned(userId, movie)
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error marking movie as planed: ${e.message}")
+            }
+        }
+    }
 }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
@@ -22,7 +23,6 @@ class UserProfileViewModel(
 
     init {
         loadUser()
-        getWatchedMovies()
     }
 
     private fun loadUser() {
@@ -37,34 +37,37 @@ class UserProfileViewModel(
 
             userFlow.collect { userData ->
                 _uiState.value = _uiState.value.copy(
-                    user = userData)
-                getWatchedMovies()
+                    user = userData
+                )
+                getWatchedAndPlanedMovies()
             }
         }
     }
 
 
-    private fun getWatchedMovies() {
+    private fun getWatchedAndPlanedMovies() {
         viewModelScope.launch {
-            if (_uiState.value.user?.uid  != null) {
-                userRepository.getWatchedMovies(_uiState.value.user!!.uid)
-                    .onStart {
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
-                    .catch { e ->
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = e.message
-                        )
-                    }
-                    .collect { movies ->
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            movies = movies,
-                            errorMessage = null
-                        )
-                    }
-            }
+            val userId = _uiState.value.user?.uid ?: return@launch
+
+            userRepository.getWatchedMovies(userId)
+                .combine(userRepository.getPlanedMovies(userId)) { watched, planned ->
+                    watched to planned
+                }
+                .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
+                .catch { e ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = e.message
+                    )
+                }
+                .collect { (watchedMovies, plannedMovies) ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        watchedMovies = watchedMovies,
+                        planedMovies = plannedMovies,
+                        errorMessage = null
+                    )
+                }
         }
     }
 }
@@ -72,7 +75,8 @@ class UserProfileViewModel(
 data class UserProfileState(
     val isCurrentAuthorizedUser: Boolean = false,
     val user: User? = null,
-    val movies: List<Movie> = emptyList(),
+    val watchedMovies: List<Movie> = emptyList(),
+    val planedMovies: List<Movie> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 )

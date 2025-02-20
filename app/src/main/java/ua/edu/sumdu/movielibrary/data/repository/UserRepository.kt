@@ -12,4 +12,6 @@ interface UserRepository {
     suspend fun getUserById(userId: String): Flow<User?>
     suspend fun markMovieAsWatched(userId: String, movie: MovieDto)
     suspend fun getWatchedMovies(userId: String): Flow<List<Movie>>
+    suspend fun markMovieAsPlaned(userId: String, movie: MovieDto)
+    suspend fun getPlanedMovies(userId: String): Flow<List<Movie>>
 }

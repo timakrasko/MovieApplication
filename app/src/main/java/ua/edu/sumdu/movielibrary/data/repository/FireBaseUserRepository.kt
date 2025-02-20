@@ -94,4 +94,39 @@ class FireBaseUserRepository(
             awaitClose { listenerRegistration.remove() }
         }
     }
+
+    override suspend fun markMovieAsPlaned(userId: String, movie: MovieDto) {
+        val userWatchedRef = userCollection
+            .document(userId)
+            .collection("planed_movies")
+            .document(movie.id)
+
+        try {
+            userWatchedRef.set(movie).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to mark movie as planed: ${e.localizedMessage}")
+        }
+    }
+
+    override suspend fun getPlanedMovies(userId: String): Flow<List<Movie>> {
+        return callbackFlow {
+            val planedMoviesRef = userCollection.document(userId)
+                .collection("planed_movies")
+
+            val listenerRegistration = planedMoviesRef.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                val movies = snapshot?.documents?.mapNotNull { document ->
+                    document.toObject(Movie::class.java)?.copy(id = document.id)
+                }.orEmpty()
+
+                trySend(movies)
+            }
+
+            awaitClose { listenerRegistration.remove() }
+        }
+    }
 }
