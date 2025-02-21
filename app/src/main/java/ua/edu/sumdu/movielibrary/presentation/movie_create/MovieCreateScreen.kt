@@ -19,8 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -56,7 +58,9 @@ fun MovieCreateScreen(
     ) {
     val viewModel: MovieCreateViewModel = koinViewModel()
     val movieState by viewModel.state.collectAsStateWithLifecycle()
+    val scrollPosition by viewModel.scrollState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState(scrollPosition)
 
     val allGenres = Genre.entries
 
@@ -64,6 +68,7 @@ fun MovieCreateScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
         Text(
             text = "Create Movie",

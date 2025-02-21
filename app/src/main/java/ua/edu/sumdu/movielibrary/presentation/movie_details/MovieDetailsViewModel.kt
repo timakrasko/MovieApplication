@@ -3,42 +3,124 @@ package ua.edu.sumdu.movielibrary.presentation.movie_details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
+import ua.edu.sumdu.movielibrary.domain.Movie
 
 class MovieDetailsViewModel(
-    private val movie: MovieDto,
+    private val movieId: String,
     private val movieRepository: MovieRepository,
     private val userRepository: UserRepository
 ): ViewModel() {
+
+    private val _uiState = MutableStateFlow(MovieDetailsState())
+    val uiState: StateFlow<MovieDetailsState> = _uiState
+
+    init {
+        getCurrentMovie()
+        getCurrentUser()
+    }
+
+    private fun getCurrentMovie() {
+        viewModelScope.launch {
+            val movieFlow = movieRepository.getMovieById(movieId)
+            movieFlow.collect{ movieData ->
+                _uiState.value = _uiState.value.copy(
+                    movie = movieData,
+                )
+                Log.d("1234", movieData?.title + movieData?.id)
+            }
+
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            val userFlow = userRepository.getCurrentUser()
+            userFlow.collect { userData ->
+                _uiState.value = _uiState.value.copy(
+                    currentUserId = userData?.uid,
+                )
+            }
+        }
+    }
+
     fun deleteMovie() {
         viewModelScope.launch {
             try {
-                movieRepository.deleteMovie(movie.id, movie.imageUrl)
+                movieRepository.deleteMovie(_uiState.value.movie!!.id, _uiState.value.movie!!.imageUrl)
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error loading movie: ${e.message}")
             }
         }
     }
-    fun markMovieAsWatched(userId: String, movie: MovieDto) {
+
+    fun markMovieAsWatched() {
         viewModelScope.launch {
             try {
-                userRepository.markMovieAsWatched(userId, movie)
+                userRepository.markMovieAsWatched(_uiState.value.currentUserId!!, _uiState.value.movie!!)
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error marking movie as watched: ${e.message}")
             }
         }
     }
 
-    fun markMovieAsPlaned(userId: String, movie: MovieDto) {
+    fun markMovieAsPlaned() {
         viewModelScope.launch {
             try {
-                userRepository.markMovieAsPlaned(userId, movie)
+                userRepository.markMovieAsPlaned(_uiState.value.currentUserId!!, _uiState.value.movie!!)
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error marking movie as planed: ${e.message}")
             }
         }
     }
+
+    private fun getWatchedAndPlanedMovies() {
+        viewModelScope.launch {
+            val userFlow = userRepository.getCurrentUser()
+            userFlow.collect { userData ->
+                _uiState.value = _uiState.value.copy(
+                    currentUserId = userData?.uid ?:""
+                )
+            }
+
+            val userId = _uiState.value.currentUserId
+            if (userId != null) {
+                userRepository.getWatchedMovies(userId)
+                    .combine(userRepository.getPlanedMovies(userId)) { watched, planned ->
+                        watched to planned
+                    }
+                    .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
+                    .catch { e ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            errorMessage = e.message
+                        )
+                    }
+                    .collect { (watchedMovies, plannedMovies) ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            isWatched = _uiState.value.movie in watchedMovies,
+                            isPlanned = _uiState.value.movie in plannedMovies,
+                            errorMessage = null
+                        )
+                    }
+            }
+        }
+    }
 }
+
+data class MovieDetailsState(
+    val movie: Movie? = null,
+    val currentUserId: String? = null,
+    val isWatched: Boolean = false,
+    val isPlanned: Boolean = false,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+)

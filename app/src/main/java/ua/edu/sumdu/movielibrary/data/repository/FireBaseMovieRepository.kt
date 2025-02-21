@@ -37,6 +37,22 @@ class FireBaseMovieRepository(
         }
     }
 
+    override suspend fun getMovieById(id: String): Flow<Movie?> = callbackFlow {
+        val userRef = movieCollection.document(id)
+
+        val listener = userRef.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                close(exception)
+                return@addSnapshotListener
+            }
+
+            val user = snapshot?.toObject(Movie::class.java)?.copy(id = snapshot.id)
+            trySend(user)
+        }
+
+        awaitClose { listener.remove() }
+    }
+
     override suspend fun addMovie(movie: Movie) {
         movieCollection.add(movie).await()
     }

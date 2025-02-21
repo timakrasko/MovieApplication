@@ -60,19 +60,6 @@ class FireBaseUserRepository(
         }
     }
 
-    override suspend fun markMovieAsWatched(userId: String, movie: MovieDto) {
-        val userWatchedRef = userCollection
-            .document(userId)
-            .collection("watched_movies")
-            .document(movie.id)
-
-        try {
-            userWatchedRef.set(movie).await()
-        } catch (e: Exception) {
-            throw Exception("Failed to mark movie as watched: ${e.localizedMessage}")
-        }
-    }
-
     override suspend fun getWatchedMovies(userId: String): Flow<List<Movie>> {
         return callbackFlow {
             val watchedMoviesRef = userCollection.document(userId)
@@ -95,7 +82,34 @@ class FireBaseUserRepository(
         }
     }
 
-    override suspend fun markMovieAsPlaned(userId: String, movie: MovieDto) {
+    override suspend fun markMovieAsWatched(userId: String, movie: Movie) {
+        if (userId.isBlank()) {
+            throw IllegalArgumentException("User ID cannot be empty")
+        }
+        if (movie.id.isBlank()) {
+            throw IllegalArgumentException("Movie ID cannot be empty")
+        }
+
+        val userWatchedRef = userCollection
+            .document(userId)
+            .collection("watched_movies")
+            .document(movie.id)
+
+        try {
+            userWatchedRef.set(movie).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to mark movie as watched: ${e.localizedMessage}")
+        }
+    }
+
+    override suspend fun markMovieAsPlaned(userId: String, movie: Movie) {
+        if (userId.isBlank()) {
+            throw IllegalArgumentException("User ID cannot be empty")
+        }
+        if (movie.id.isBlank()) {
+            throw IllegalArgumentException("Movie ID cannot be empty")
+        }
+
         val userWatchedRef = userCollection
             .document(userId)
             .collection("planed_movies")

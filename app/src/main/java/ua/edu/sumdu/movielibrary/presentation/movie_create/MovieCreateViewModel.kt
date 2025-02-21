@@ -14,6 +14,9 @@ class MovieCreateViewModel(
     private val _state = MutableStateFlow(MovieCreateState())
     val state: StateFlow<MovieCreateState> = _state
 
+    private val _scrollState = MutableStateFlow(0)
+    val scrollState: StateFlow<Int> = _scrollState
+
     fun onTitleChange(newTitle: String) {
         _state.value = _state.value.copy(title = newTitle)
     }
@@ -54,6 +57,7 @@ class MovieCreateViewModel(
                 val img = currentState.imageUri?.let { repository.uploadImageToStorage(it) }
                 val movie = Movie(
                     title = currentState.title,
+                    director = currentState.director,
                     description = currentState.description,
                     releaseYear = currentState.releaseYear,
                     imageUrl = img.toString(),

@@ -18,8 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,54 +47,39 @@ fun MainScreen(
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
 
     if (movieListState.isLoading) {
-         Log.d("123", "123")
+        Log.d("123", "123")
     } else {
-        ModalNavigationDrawer(
-            modifier = Modifier.fillMaxWidth(),
-            drawerContent = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(0.7f)
-                ) {
-                    Text("Drawer Content")
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Button(
+                onClick = { navigateToMovieCreate(CreateScreenObject) },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(text = "Add Movie")
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(movieListState.movies) { movie ->
+                    MovieCard(movie, navigateToMovieDetails)
                 }
             }
-        ) {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-//                bottomBar = { BottomMenu() }
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Button(
-                        onClick = { navigateToMovieCreate(CreateScreenObject) },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(text = "Add Movie")
-                    }
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
 
-                        items(movieListState.movies) { movie ->
-                            MovieCard(movie, navigateToMovieDetails)
-                        }
-                    }
+            if (movieListState.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
 
-                    if (movieListState.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                    }
-
-                    movieListState.errorMessage?.let {
-                        Text(text = it, color = Color.Red)
-                    }
-                }
+            movieListState.errorMessage?.let {
+                Text(text = it, color = Color.Red)
             }
         }
     }
 }
+
 
 
 @Composable
@@ -151,7 +134,7 @@ fun MovieCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                movie.genres.forEach{
+                movie.genres.forEach {
                     Text(
                         text = it,
                         maxLines = 4,
