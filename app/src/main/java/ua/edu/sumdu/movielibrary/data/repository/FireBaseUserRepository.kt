@@ -6,7 +6,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
 import ua.edu.sumdu.movielibrary.domain.User
 
@@ -141,6 +140,30 @@ class FireBaseUserRepository(
             }
 
             awaitClose { listenerRegistration.remove() }
+        }
+    }
+
+    override suspend fun removeWatchedMovie(userId: String, movieId: String) {
+        try {
+            userCollection.document(userId)
+                .collection("watched_movies")
+                .document(movieId)
+                .delete()
+                .await()
+        } catch (e: Exception) {
+            throw Exception("Error removing movie: ${e.message}")
+        }
+    }
+
+    override suspend fun removePlanedMovie(userId: String, movieId: String) {
+        try {
+            userCollection.document(userId)
+                .collection("planed_movies")
+                .document(movieId)
+                .delete()
+                .await()
+        } catch (e: Exception) {
+            throw Exception("Error removing movie: ${e.message}")
         }
     }
 }

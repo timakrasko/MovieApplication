@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -151,26 +149,44 @@ fun MovieDetailsScreen(
             Text(text = "Delete")
         }
 
-
-        Button(
-            onClick = {
-                viewModel.markMovieAsWatched()
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text(text = "Add to watched")
+        if (!state.isWatched) {
+            Button(
+                onClick = {
+                    viewModel.markMovieAsWatched()
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text(text = "Add to watched")
+            }
+        } else {
+            Button(
+                onClick = {
+                    viewModel.removeWatchedMovie()
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text(text = "Remove from watched")
+            }
         }
 
-        Button(
-            onClick = {
-                val userId = Firebase.auth.currentUser?.uid
-                if (userId != null) {
+        if (!state.isPlanned) {
+            Button(
+                onClick = {
                     viewModel.markMovieAsPlaned()
-                }
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text(text = "Add to planed")
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text(text = "Add to planed")
+            }
+        } else {
+            Button(
+                onClick = {
+                    viewModel.removePlanedMovie()
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text(text = "Remove from planed")
+            }
         }
     }
 }

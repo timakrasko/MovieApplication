@@ -17,7 +17,7 @@ class MovieDetailsViewModel(
     private val movieId: String,
     private val movieRepository: MovieRepository,
     private val userRepository: UserRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MovieDetailsState())
     val uiState: StateFlow<MovieDetailsState> = _uiState
@@ -30,11 +30,10 @@ class MovieDetailsViewModel(
     private fun getCurrentMovie() {
         viewModelScope.launch {
             val movieFlow = movieRepository.getMovieById(movieId)
-            movieFlow.collect{ movieData ->
+            movieFlow.collect { movieData ->
                 _uiState.value = _uiState.value.copy(
                     movie = movieData,
                 )
-                Log.d("1234", movieData?.title + movieData?.id)
             }
 
         }
@@ -47,6 +46,7 @@ class MovieDetailsViewModel(
                 _uiState.value = _uiState.value.copy(
                     currentUserId = userData?.uid,
                 )
+                getWatchedAndPlanedMovies()
             }
         }
     }
@@ -54,7 +54,10 @@ class MovieDetailsViewModel(
     fun deleteMovie() {
         viewModelScope.launch {
             try {
-                movieRepository.deleteMovie(_uiState.value.movie!!.id, _uiState.value.movie!!.imageUrl)
+                movieRepository.deleteMovie(
+                    _uiState.value.movie!!.id,
+                    _uiState.value.movie!!.imageUrl
+                )
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error loading movie: ${e.message}")
             }
@@ -64,7 +67,10 @@ class MovieDetailsViewModel(
     fun markMovieAsWatched() {
         viewModelScope.launch {
             try {
-                userRepository.markMovieAsWatched(_uiState.value.currentUserId!!, _uiState.value.movie!!)
+                userRepository.markMovieAsWatched(
+                    _uiState.value.currentUserId!!,
+                    _uiState.value.movie!!
+                )
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error marking movie as watched: ${e.message}")
             }
@@ -74,22 +80,44 @@ class MovieDetailsViewModel(
     fun markMovieAsPlaned() {
         viewModelScope.launch {
             try {
-                userRepository.markMovieAsPlaned(_uiState.value.currentUserId!!, _uiState.value.movie!!)
+                userRepository.markMovieAsPlaned(
+                    _uiState.value.currentUserId!!,
+                    _uiState.value.movie!!
+                )
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error marking movie as planed: ${e.message}")
             }
         }
     }
 
+    fun removeWatchedMovie() {
+        viewModelScope.launch {
+            try {
+                userRepository.removeWatchedMovie(
+                    _uiState.value.currentUserId!!,
+                    _uiState.value.movie!!.id
+                )
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error remove movie from watched: ${e.message}")
+            }
+        }
+    }
+
+    fun removePlanedMovie() {
+        viewModelScope.launch {
+            try {
+                userRepository.removePlanedMovie(
+                    _uiState.value.currentUserId!!,
+                    _uiState.value.movie!!.id
+                )
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error remove movie from planed: ${e.message}")
+            }
+        }
+    }
+
     private fun getWatchedAndPlanedMovies() {
         viewModelScope.launch {
-            val userFlow = userRepository.getCurrentUser()
-            userFlow.collect { userData ->
-                _uiState.value = _uiState.value.copy(
-                    currentUserId = userData?.uid ?:""
-                )
-            }
-
             val userId = _uiState.value.currentUserId
             if (userId != null) {
                 userRepository.getWatchedMovies(userId)

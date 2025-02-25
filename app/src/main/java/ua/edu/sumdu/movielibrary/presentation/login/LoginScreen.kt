@@ -35,12 +35,12 @@ fun LoginScreen(
     val loginUiState by viewModel.uiState.collectAsState()
 
 
-    //КАСТЫЛЬ
+
     val fb = viewModel.isUserSignedIn()
 //    if (fb.currentUser != null){
 //        onNavigationToMainScreen(MainScreenDataObject(fb.currentUser?.uid?: "", fb.currentUser?.email?: ""))
 //    }
-    //ДО СИХ ПОР КАСТЫЛЬ
+
 
     Image(
         painter = painterResource(id = R.drawable.lotr),
