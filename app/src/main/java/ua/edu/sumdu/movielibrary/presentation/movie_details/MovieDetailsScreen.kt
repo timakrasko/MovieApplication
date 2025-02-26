@@ -158,6 +158,26 @@ fun MovieDetailsScreen(
             ) {
                 Text(text = "Add to watched")
             }
+
+            if (!state.isPlanned) {
+                Button(
+                    onClick = {
+                        viewModel.markMovieAsPlaned()
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(text = "Add to planed")
+                }
+            } else {
+                Button(
+                    onClick = {
+                        viewModel.removePlanedMovie()
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(text = "Remove from planed")
+                }
+            }
         } else {
             Button(
                 onClick = {
@@ -166,26 +186,6 @@ fun MovieDetailsScreen(
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(text = "Remove from watched")
-            }
-        }
-
-        if (!state.isPlanned) {
-            Button(
-                onClick = {
-                    viewModel.markMovieAsPlaned()
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(text = "Add to planed")
-            }
-        } else {
-            Button(
-                onClick = {
-                    viewModel.removePlanedMovie()
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(text = "Remove from planed")
             }
         }
     }

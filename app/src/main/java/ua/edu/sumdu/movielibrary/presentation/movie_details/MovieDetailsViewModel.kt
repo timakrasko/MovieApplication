@@ -71,6 +71,10 @@ class MovieDetailsViewModel(
                     _uiState.value.currentUserId!!,
                     _uiState.value.movie!!
                 )
+                userRepository.removePlanedMovie(
+                    _uiState.value.currentUserId!!,
+                    _uiState.value.movie!!.id
+                )
             } catch (e: Exception) {
                 Log.e("MovieViewModel", "Error marking movie as watched: ${e.message}")
             }
