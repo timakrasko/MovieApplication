@@ -17,4 +17,4 @@ Developed using **Kotlin, Jetpack Compose, Firebase, and Koin**.
 ## How to Run
 1. Clone the repository
 2. Sync Gradle dependencies.
-3. Run the app on an emulator or a physical device.b.com/your-username/movie-library.git
+3. Run the app on an emulator or a physical device
