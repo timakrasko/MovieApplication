@@ -20,11 +20,10 @@ class MovieDetailsViewModel(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MovieDetailsState())
-    var uiState: StateFlow<MovieDetailsState> = _uiState
+    val uiState: StateFlow<MovieDetailsState> = _uiState
 
     init {
         getCurrentMovie()
-
         getCurrentUser()
     }
 
@@ -60,7 +59,7 @@ class MovieDetailsViewModel(
                     _uiState.value.movie!!.imageUrl
                 )
             } catch (e: Exception) {
-                Log.e("MovieViewModel", "Error loading movie: ${e.message!!}")
+                Log.e("MovieViewModel", "Error loading movie: ${e.message}")
             }
         }
     }

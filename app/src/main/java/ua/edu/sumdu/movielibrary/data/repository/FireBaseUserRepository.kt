@@ -82,12 +82,8 @@ class FireBaseUserRepository(
     }
 
     override suspend fun markMovieAsWatched(userId: String, movie: Movie) {
-        if (userId.isBlank()) {
-            throw IllegalArgumentException("User ID cannot be empty")
-        }
-        if (movie.id.isBlank()) {
-            throw IllegalArgumentException("Movie ID cannot be empty")
-        }
+        require(userId.isNotBlank()) { "User ID cannot be empty" }
+        require(movie.id.isNotBlank()) { "Movie ID cannot be empty" }
 
         val userWatchedRef = userCollection
             .document(userId)
@@ -102,12 +98,8 @@ class FireBaseUserRepository(
     }
 
     override suspend fun markMovieAsPlaned(userId: String, movie: Movie) {
-        if (userId.isBlank()) {
-            throw IllegalArgumentException("User ID cannot be empty")
-        }
-        if (movie.id.isBlank()) {
-            throw IllegalArgumentException("Movie ID cannot be empty")
-        }
+        require(userId.isNotBlank()) { "User ID cannot be empty" }
+        require(movie.id.isNotBlank()) { "Movie ID cannot be empty" }
 
         val userWatchedRef = userCollection
             .document(userId)
