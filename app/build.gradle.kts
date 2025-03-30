@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "ua.edu.sumdu.movielibrary"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "ua.edu.sumdu.movielibrary"
