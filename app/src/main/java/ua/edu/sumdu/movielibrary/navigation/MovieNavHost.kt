@@ -56,9 +56,11 @@ fun MovieNavHost(
                         NavigationBarItem(
                             icon = {
                                 Icon(
-                                    imageVector = if (currentDestination?.route == topLevelRoute.route.javaClass.canonicalName) ImageVector.vectorResource(
-                                        R.drawable.ic_favs
-                                    ) else ImageVector.vectorResource(R.drawable.ic_settings),
+                                    imageVector = if (currentDestination?.route ==
+                                        topLevelRoute.route.javaClass.canonicalName)
+                                        ImageVector.vectorResource(
+                                            R.drawable.ic_favs
+                                        ) else ImageVector.vectorResource(R.drawable.ic_settings),
                                     contentDescription = topLevelRoute.name
                                 )
                             },

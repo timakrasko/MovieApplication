@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
-import ua.edu.sumdu.movielibrary.data.repository.OnlineMovieRepository
+import ua.edu.sumdu.movielibrary.data.repository.OnlineRepository
 
 
 data class LoginUiState(
@@ -20,7 +20,7 @@ data class LoginUiState(
 )
 
 class LoginViewModel(
-    private val repository: OnlineMovieRepository
+    private val repository: OnlineRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()

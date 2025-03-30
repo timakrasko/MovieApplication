@@ -6,7 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 
-class OnlineMovieRepository(
+class OnlineRepository(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) {

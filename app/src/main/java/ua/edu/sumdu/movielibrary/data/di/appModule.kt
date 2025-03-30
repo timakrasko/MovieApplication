@@ -9,7 +9,7 @@ import org.koin.dsl.module
 import ua.edu.sumdu.movielibrary.data.repository.FireBaseMovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.FireBaseUserRepository
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
-import ua.edu.sumdu.movielibrary.data.repository.OnlineMovieRepository
+import ua.edu.sumdu.movielibrary.data.repository.OnlineRepository
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
 import ua.edu.sumdu.movielibrary.presentation.login.LoginViewModel
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainViewModel
@@ -24,7 +24,7 @@ val appModule = module {
     single { Firebase.auth }
     single<MovieRepository> { FireBaseMovieRepository(get(), get()) }
     single<UserRepository> { FireBaseUserRepository(get(), get()) }
-    single<OnlineMovieRepository> {OnlineMovieRepository(get(), get())}
+    single<OnlineRepository> {OnlineRepository(get(), get())}
     viewModel {LoginViewModel(get())}
     viewModel { MainViewModel(get()) }
     viewModel { UsersViewModel(get()) }
