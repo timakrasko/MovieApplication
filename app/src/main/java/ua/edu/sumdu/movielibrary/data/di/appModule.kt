@@ -22,7 +22,7 @@ val appModule = module {
     single { Firebase.storage }
     single { Firebase.firestore }
     single { Firebase.auth }
-    single<MovieRepository> { FireBaseMovieRepository(get(), get()) }
+    single<MovieRepository> { FireBaseMovieRepository(get(), get(), get()) }
     single<UserRepository> { FireBaseUserRepository(get(), get()) }
     single<OnlineMovieRepository> {OnlineMovieRepository(get(), get())}
     viewModel {LoginViewModel(get())}

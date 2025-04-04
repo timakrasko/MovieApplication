@@ -11,7 +11,7 @@ import ua.edu.sumdu.movielibrary.domain.User
 
 class FireBaseUserRepository(
     private val auth: FirebaseAuth,
-    firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore
 ): UserRepository {
 
     private val userCollection = firestore.collection("users")
@@ -164,6 +164,30 @@ class FireBaseUserRepository(
                 .await()
         } catch (e: Exception) {
             throw Exception("Error removing movie: ${e.message}")
+        }
+    }
+
+    override suspend fun removeMovieFromAllUsers(movieId: String) {
+        try {
+            val usersSnapshot = userCollection.get().await()
+
+            val batch = firestore.batch()
+            for (user in usersSnapshot.documents) {
+
+                val watchedMovieRef = user.reference
+                    .collection("watched_movies")
+                    .document(movieId)
+                batch.delete(watchedMovieRef)
+
+                val plannedMovieRef = user.reference
+                    .collection("planned_movies")
+                    .document(movieId)
+                batch.delete(plannedMovieRef)
+            }
+
+            batch.commit().await()
+        } catch (e: Exception) {
+            throw Exception("Failed to remove movie from users' lists: ${e.localizedMessage}")
         }
     }
 }

@@ -13,7 +13,8 @@ import java.util.UUID
 
 class FireBaseMovieRepository(
     firestore: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val userRepository: UserRepository
 ) : MovieRepository {
 
     private val movieCollection = firestore.collection("movies")
@@ -59,14 +60,19 @@ class FireBaseMovieRepository(
 
     override suspend fun deleteMovie(id: String, imageUrl: String?) {
         try {
+            userRepository.removeMovieFromAllUsers(id)
+
             movieCollection.document(id).delete().await()
+
             if (!imageUrl.isNullOrEmpty()) {
                 deleteImageFromStorage(imageUrl)
             }
+
         } catch (e: Exception) {
             throw Exception("Failed to delete movie: ${e.localizedMessage}")
         }
     }
+
 
     override suspend fun uploadImageToStorage(uri: Uri): String {
         val storageReference = storage.reference

@@ -15,4 +15,5 @@ interface UserRepository {
     suspend fun getPlanedMovies(userId: String): Flow<List<Movie>>
     suspend fun removeWatchedMovie(userId: String, movieId: String)
     suspend fun removePlanedMovie(userId: String, movieId: String)
+    suspend fun removeMovieFromAllUsers(movieId: String)
 }
