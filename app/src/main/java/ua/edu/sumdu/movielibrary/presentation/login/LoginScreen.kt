@@ -34,16 +34,8 @@ fun LoginScreen(
     val viewModel: LoginViewModel = koinViewModel()
     val loginUiState by viewModel.uiState.collectAsState()
 
-
-
-    val fb = viewModel.isUserSignedIn()
-//    if (fb.currentUser != null){
-//        onNavigationToMainScreen(MainScreenDataObject(fb.currentUser?.uid?: "", fb.currentUser?.email?: ""))
-//    }
-
-
     Image(
-        painter = painterResource(id = R.drawable.lotr),
+        painter = painterResource(id = R.drawable.login_background),
         contentDescription = "BG",
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Crop

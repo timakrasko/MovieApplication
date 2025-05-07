@@ -30,11 +30,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ua.edu.sumdu.movielibrary.data.dto.UpdateScreenObject
 
 @Composable
 fun MovieDetailsScreen(
     movieId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToEditScreen: (UpdateScreenObject) -> Unit,
 ) {
     val viewModel: MovieDetailsViewModel = koinViewModel(parameters = { parametersOf(movieId) })
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -76,7 +78,7 @@ fun MovieDetailsScreen(
                 }
             } else {
                 AsyncImage(
-                    model = movie?.imageUrl,
+                    model = movie.imageUrl,
                     contentDescription = "Poster",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -147,6 +149,15 @@ fun MovieDetailsScreen(
             modifier = Modifier.align(Alignment.End)
         ) {
             Text(text = "Delete")
+        }
+
+        Button(
+            onClick = {
+                onNavigateToEditScreen(UpdateScreenObject(movieId))
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(text = "Edit")
         }
 
         if (!state.isWatched) {

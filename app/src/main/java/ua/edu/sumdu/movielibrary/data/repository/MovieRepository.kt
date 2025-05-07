@@ -10,4 +10,5 @@ interface MovieRepository {
     suspend fun addMovie(movie: Movie)
     suspend fun deleteMovie(id: String, imageUrl: String?)
     suspend fun uploadImageToStorage(uri: Uri): String
+    suspend fun updateMovie(movieId: String, movie: Movie)
 }

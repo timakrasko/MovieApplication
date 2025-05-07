@@ -15,6 +15,7 @@ import ua.edu.sumdu.movielibrary.presentation.login.LoginViewModel
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateViewModel
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsViewModel
+import ua.edu.sumdu.movielibrary.presentation.movie_update.MovieUpdateViewModel
 import ua.edu.sumdu.movielibrary.presentation.user_profile.UserProfileViewModel
 import ua.edu.sumdu.movielibrary.presentation.users.UsersViewModel
 
@@ -25,10 +26,11 @@ val appModule = module {
     single<MovieRepository> { FireBaseMovieRepository(get(), get(), get()) }
     single<UserRepository> { FireBaseUserRepository(get(), get()) }
     single<OnlineMovieRepository> {OnlineMovieRepository(get(), get())}
-    viewModel {LoginViewModel(get())}
+    viewModel { LoginViewModel(get())}
     viewModel { MainViewModel(get()) }
     viewModel { UsersViewModel(get()) }
     viewModel { (movieId: String) -> MovieDetailsViewModel(movieId, get(), get())}
     viewModel { MovieCreateViewModel(get()) }
+    viewModel { (movieId: String) -> MovieUpdateViewModel(movieId, get())}
     viewModel { (userId: String) -> UserProfileViewModel(userId, get())}
 }

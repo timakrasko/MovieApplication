@@ -58,6 +58,19 @@ class FireBaseMovieRepository(
         movieCollection.add(movie).await()
     }
 
+    override suspend fun updateMovie(movieId: String, movie: Movie) {
+        movieCollection.document(movieId).update(
+            mapOf(
+                "title" to movie.title,
+                "director" to movie.director,
+                "description" to movie.description,
+                "releaseYear" to movie.releaseYear,
+                "imageUrl" to movie.imageUrl,
+                "genres" to movie.genres
+            )
+        ).await()
+    }
+
     override suspend fun deleteMovie(id: String, imageUrl: String?) {
         try {
             userRepository.removeMovieFromAllUsers(id)

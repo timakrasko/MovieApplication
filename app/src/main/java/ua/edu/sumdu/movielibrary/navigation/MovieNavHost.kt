@@ -22,12 +22,14 @@ import ua.edu.sumdu.movielibrary.data.dto.CreateScreenObject
 import ua.edu.sumdu.movielibrary.data.dto.LoginScreenObject
 import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.dto.MovieDto
+import ua.edu.sumdu.movielibrary.data.dto.UpdateScreenObject
 import ua.edu.sumdu.movielibrary.data.dto.UserDto
 import ua.edu.sumdu.movielibrary.data.dto.UsersScreenObject
 import ua.edu.sumdu.movielibrary.presentation.login.LoginScreen
 import ua.edu.sumdu.movielibrary.presentation.main_screen.MainScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_create.MovieCreateScreen
 import ua.edu.sumdu.movielibrary.presentation.movie_details.MovieDetailsScreen
+import ua.edu.sumdu.movielibrary.presentation.movie_update.MovieUpdateScreen
 import ua.edu.sumdu.movielibrary.presentation.user_profile.UserProfileScreen
 import ua.edu.sumdu.movielibrary.presentation.users.UsersScreen
 
@@ -56,9 +58,7 @@ fun MovieNavHost(
                         NavigationBarItem(
                             icon = {
                                 Icon(
-                                    imageVector = if (currentDestination?.route == topLevelRoute.route.javaClass.canonicalName) ImageVector.vectorResource(
-                                        R.drawable.ic_favs
-                                    ) else ImageVector.vectorResource(R.drawable.ic_settings),
+                                    imageVector =  ImageVector.vectorResource(R.drawable.ic_settings),
                                     contentDescription = topLevelRoute.name
                                 )
                             },
@@ -118,8 +118,12 @@ fun MovieNavHost(
             composable<MovieDto> { backStackEntry ->
                 val movie = backStackEntry.toRoute<MovieDto>()
                 MovieDetailsScreen(
-                    movie.id
-                ) { navController.popBackStack() }
+                    movie.id,
+                    onNavigateToEditScreen = { movie ->
+                        navController.navigate(movie)
+                    },
+                    onNavigateBack = { navController.popBackStack() },
+                )
             }
 
             composable<CreateScreenObject> {
@@ -134,6 +138,13 @@ fun MovieNavHost(
                         navController.navigate(movie)
                     },
                 )
+            }
+
+            composable<UpdateScreenObject> { backStackEntry ->
+                val movie: UpdateScreenObject = backStackEntry.toRoute()
+                MovieUpdateScreen(
+                    movie.movieId
+                ) { navController.popBackStack() }
             }
         }
     }

@@ -64,15 +64,15 @@ class MovieCreateViewModel(
                     genres = currentState.selectedGenres.map { it.name }
                 )
                 repository.addMovie(movie)
-                _state.value = currentState.copy(
-                    isLoading = false,
-                    title = "",
-                    description = "",
-                    releaseYear = "",
-                    director = "",
-                    imageUri = null,
-                    selectedGenres = emptyList()
-                )
+//                _state.value = currentState.copy(
+//                    isLoading = false,
+//                    title = "",
+//                    description = "",
+//                    releaseYear = "",
+//                    director = "",
+//                    imageUri = null,
+//                    selectedGenres = emptyList()
+//                )
             } catch (e: Exception) {
                 _state.value = currentState.copy(
                     isLoading = false,

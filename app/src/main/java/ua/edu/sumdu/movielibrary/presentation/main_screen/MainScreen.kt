@@ -1,7 +1,6 @@
 package ua.edu.sumdu.movielibrary.presentation.main_screen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,7 +46,7 @@ fun MainScreen(
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
 
     if (movieListState.isLoading) {
-        Log.d("123", "123")
+        TODO()
     } else {
         Column(
             modifier = Modifier.fillMaxSize()

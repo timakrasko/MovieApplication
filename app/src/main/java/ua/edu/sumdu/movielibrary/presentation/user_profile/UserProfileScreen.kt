@@ -76,7 +76,7 @@ fun UserProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = state.planedMovies.isEmpty().toString(),
+            text = "Planed Movies",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.Start)
