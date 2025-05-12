@@ -29,7 +29,8 @@ class UserProfileViewModel(
         viewModelScope.launch {
             val userFlow: Flow<User?>
             if (userId.isNullOrEmpty()) {
-                userFlow = userRepository.getCurrentUser()
+                val currentUserId = userRepository.getCurrentUserId()
+                userFlow = userRepository.getUserById(currentUserId)
                 _uiState.value = _uiState.value.copy(isCurrentAuthorizedUser = true)
             } else {
                 userFlow = userRepository.getUserById(userId)
@@ -40,6 +41,7 @@ class UserProfileViewModel(
                     user = userData
                 )
                 getWatchedAndPlanedMovies()
+                loadFriends()
             }
         }
     }
@@ -70,6 +72,36 @@ class UserProfileViewModel(
                 }
         }
     }
+
+    fun loadFriends() {
+        viewModelScope.launch {
+            val userId = _uiState.value.user?.uid ?: return@launch
+            userRepository.getFriends(userId)
+                .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
+                .catch { e ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = e.message
+                    )
+                }
+                .collect { friends ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        friends = friends,
+                        errorMessage = null
+                    )
+                }
+        }
+    }
+
+    fun addFriend(friendId: String) {
+        viewModelScope.launch {
+            try {
+                userRepository.addUserToFriends(friendId)
+            } catch (e: Exception) {
+            }
+        }
+    }
 }
 
 data class UserProfileState(
@@ -77,6 +109,7 @@ data class UserProfileState(
     val user: User? = null,
     val watchedMovies: List<Movie> = emptyList(),
     val planedMovies: List<Movie> = emptyList(),
+    val friends: List<User> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 )

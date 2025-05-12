@@ -41,7 +41,8 @@ class MovieDetailsViewModel(
 
     private fun getCurrentUser() {
         viewModelScope.launch {
-            val userFlow = userRepository.getCurrentUser()
+            val userId = userRepository.getCurrentUserId()
+            val userFlow = userRepository.getUserById(userId)
             userFlow.collect { userData ->
                 _uiState.value = _uiState.value.copy(
                     currentUserId = userData?.uid,

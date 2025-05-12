@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.ui.*
 import androidx.compose.runtime.Composable
@@ -25,6 +25,7 @@ import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.dto.UserDto
 import ua.edu.sumdu.movielibrary.data.dto.toMovieDto
 import ua.edu.sumdu.movielibrary.domain.Movie
+import ua.edu.sumdu.movielibrary.domain.User
 
 @Composable
 fun UserProfileScreen(
@@ -41,6 +42,7 @@ fun UserProfileScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         // User Profile Picture
 
 
@@ -52,6 +54,13 @@ fun UserProfileScreen(
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
+        Button(
+            onClick = {
+                viewModel.addFriend(user?.uid ?: "")
+            },
+        ) {
+            Text(text = "Add Friend")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -94,15 +103,37 @@ fun UserProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Logout Button
-        Button(
-            onClick = {
-                TODO()
-            },
-            colors = ButtonDefaults.buttonColors(Color.Red)
-        ) {
-            Text(text = "Logout", color = Color.White)
+        Text(
+            text = "Friends",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        when {
+            state.friends.isEmpty() -> {
+                Text(
+                    text = "No friends yet",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.weight(1f))
+                    {
+                        items(state.friends) { friend ->
+                            // FriendItem - потрібно створити окремий Composable
+                            FriendItem(friend = friend)
+                        }
+                    }
+            }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //logout
     }
 }
 
@@ -132,6 +163,35 @@ fun MovieItem(
         Column {
             Text(text = movie.title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Text(text = movie.director , fontSize = 14.sp, color = Color.Gray)
+        }
+    }
+}
+
+@Composable
+fun FriendItem(
+    friend: User,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+//            // Аватар користувача
+//            AsyncImage(
+//                model = friend?.avatarUrl ?: "default_avatar_url",
+//                contentDescription = "Friend avatar",
+//                modifier = Modifier.size(48.dp)
+//            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = friend?.email ?: "Loading...",
+                fontSize = 16.sp)
         }
     }
 }

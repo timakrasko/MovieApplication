@@ -7,7 +7,7 @@ import ua.edu.sumdu.movielibrary.domain.User
 interface UserRepository {
     suspend fun saveUser(user: User)
     suspend fun getUsers(): Flow<List<User>>
-    suspend fun getCurrentUser(): Flow<User?>
+    suspend fun getCurrentUserId(): String
     suspend fun getUserById(userId: String): Flow<User?>
     suspend fun markMovieAsWatched(userId: String, movie: Movie)
     suspend fun getWatchedMovies(userId: String): Flow<List<Movie>>
@@ -16,4 +16,6 @@ interface UserRepository {
     suspend fun removeWatchedMovie(userId: String, movieId: String)
     suspend fun removePlanedMovie(userId: String, movieId: String)
     suspend fun removeMovieFromAllUsers(movieId: String)
+    suspend fun addUserToFriends(friendId: String)
+    suspend fun getFriends(userId: String): Flow<List<User>>
 }

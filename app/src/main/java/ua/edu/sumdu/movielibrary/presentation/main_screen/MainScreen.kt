@@ -46,7 +46,7 @@ fun MainScreen(
     val movieListState by viewModel.movieListState.collectAsStateWithLifecycle()
 
     if (movieListState.isLoading) {
-        TODO()
+
     } else {
         Column(
             modifier = Modifier.fillMaxSize()

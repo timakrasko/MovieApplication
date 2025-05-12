@@ -20,8 +20,8 @@ class FireBaseUserRepository(
         userCollection.document(user.uid).set(user).await()
     }
 
-    override suspend fun getCurrentUser(): Flow<User?> {
-        return getUserById(auth.currentUser!!.uid)
+    override suspend fun getCurrentUserId(): String {
+        return auth.currentUser!!.uid
     }
 
     override suspend fun getUserById(userId: String): Flow<User?> = callbackFlow {
@@ -188,6 +188,55 @@ class FireBaseUserRepository(
             batch.commit().await()
         } catch (e: Exception) {
             throw Exception("Failed to remove movie from users' lists: ${e.localizedMessage}")
+        }
+    }
+
+    override suspend fun addUserToFriends(friendId: String) {
+        val userId = getCurrentUserId()
+
+        val userFriendsRef = userCollection
+            .document(userId)
+            .collection("friends")
+            .document(friendId)
+
+        try {
+            userFriendsRef.set(mapOf(
+                "friendId" to friendId,
+            )).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to add friend: ${e.localizedMessage}")
+        }
+    }
+
+    override suspend fun getFriends(userId: String): Flow<List<User>> {
+        if (userId.isBlank()) {
+            throw IllegalArgumentException("User ID cannot be empty")
+        }
+
+        return callbackFlow {
+            try {
+                val snapshot = userCollection
+                    .document(userId)
+                    .collection("friends")
+                    .get()
+                    .await()
+                
+                val friendIds = snapshot.documents.map { it.id }
+
+                val friends = friendIds.mapNotNull { friendId ->
+                    try {
+                        userCollection.document(friendId).get().await().toObject(User::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+
+                trySend(friends).isSuccess
+                close()
+            } catch (e: Exception) {
+                close(e)
+                throw Exception("Failed to get friends list: ${e.localizedMessage}")
+            }
         }
     }
 }
