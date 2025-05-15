@@ -72,7 +72,8 @@ class OnlineMovieRepository(
             if (!document.exists()) {
                 val user = mapOf(
                     "email" to email,
-                    "uid" to userId
+                    "uid" to userId,
+                    "isAdmin" to false
                 )
                 userRef.set(user).await()
             }

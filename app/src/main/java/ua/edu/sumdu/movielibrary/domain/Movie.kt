@@ -7,5 +7,6 @@ data class Movie(
     val imageUrl: String = "",
     val director: String = "",
     val releaseYear: String = "",
-    val genres: List<String> = listOf()
+    val genres: List<String> = listOf(),
+    val rating: Int? = null
 )

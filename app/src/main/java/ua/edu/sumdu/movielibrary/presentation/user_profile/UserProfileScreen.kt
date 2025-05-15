@@ -149,6 +149,7 @@ fun MovieItem(
             .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
             .clickable { navigateToMovieDetails(movie.toMovieDto()) }
             .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
             model = movie.imageUrl,
@@ -160,9 +161,28 @@ fun MovieItem(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Column {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(text = movie.title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(text = movie.director , fontSize = 14.sp, color = Color.Gray)
+            Text(text = movie.director, fontSize = 14.sp, color = Color.Gray)
+        }
+
+        // Додаємо відображення рейтингу справа
+        movie.rating?.let { rating ->
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(Color.DarkGray, RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = rating.toString(),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
         }
     }
 }
@@ -180,13 +200,6 @@ fun FriendItem(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-//            // Аватар користувача
-//            AsyncImage(
-//                model = friend?.avatarUrl ?: "default_avatar_url",
-//                contentDescription = "Friend avatar",
-//                modifier = Modifier.size(48.dp)
-//            )
-
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(

@@ -10,7 +10,8 @@ data class UserDto(
     val username: String = "",
     val watchedList: List<String> = listOf(),
     val createdAt: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val isAdmin: Boolean = false
 )
 
 fun User.toUserDto(): UserDto{
@@ -20,6 +21,7 @@ fun User.toUserDto(): UserDto{
         username = username,
         watchedList = watchedList,
         createdAt = createdAt,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        isAdmin = isAdmin
     )
 }

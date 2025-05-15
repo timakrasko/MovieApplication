@@ -82,6 +82,21 @@ class MovieDetailsViewModel(
         }
     }
 
+    fun rateMovie(rating: Int) {
+        viewModelScope.launch {
+            try {
+                userRepository.rateMovie(
+                    _uiState.value.currentUserId!!,
+                    _uiState.value.movie!!.id,
+                    rating
+                )
+            } catch (e: Exception) {
+                Log.e("MovieViewModel", "Error rating movie: ${e.message}")
+            }
+            getWatchedAndPlanedMovies()
+        }
+    }
+
     fun markMovieAsPlaned() {
         viewModelScope.launch {
             try {
@@ -127,7 +142,17 @@ class MovieDetailsViewModel(
             if (userId != null) {
                 userRepository.getWatchedMovies(userId)
                     .combine(userRepository.getPlanedMovies(userId)) { watched, planned ->
-                        watched to planned
+                        // Знаходимо поточний фільм у переглянутих
+                        val watchedMovie = watched.firstOrNull { it.id == _uiState.value.movie?.id }
+
+                        // Оновлюємо стан
+                        _uiState.value.copy(
+                            isLoading = false,
+                            isWatched = watchedMovie != null,
+                            isPlanned = planned.any { it.id == _uiState.value.movie?.id },
+                            movieRating = watchedMovie?.rating, // Додаємо рейтинг
+                            errorMessage = null
+                        )
                     }
                     .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
                     .catch { e ->
@@ -136,13 +161,8 @@ class MovieDetailsViewModel(
                             errorMessage = e.message
                         )
                     }
-                    .collect { (watchedMovies, plannedMovies) ->
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            isWatched = _uiState.value.movie in watchedMovies,
-                            isPlanned = _uiState.value.movie in plannedMovies,
-                            errorMessage = null
-                        )
+                    .collect { newState ->
+                        _uiState.value = newState
                     }
             }
         }
@@ -151,6 +171,7 @@ class MovieDetailsViewModel(
 
 data class MovieDetailsState(
     val movie: Movie? = null,
+    val movieRating: Int? = null,
     val currentUserId: String? = null,
     val isWatched: Boolean = false,
     val isPlanned: Boolean = false,

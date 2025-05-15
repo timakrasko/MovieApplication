@@ -8,5 +8,6 @@ data class User(
     val planedList: List<String> = listOf(),
     val friendList: List<String> = listOf(),
     val createdAt: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val isAdmin: Boolean = false
 )

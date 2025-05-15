@@ -1,7 +1,9 @@
 package ua.edu.sumdu.movielibrary.presentation.movie_details
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -141,6 +146,16 @@ fun MovieDetailsScreen(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
+
+        MovieRatingBar(
+            isWatched = state.isWatched,
+            currentRating = state.movieRating,
+            onRatingChanged = { rating ->
+                viewModel.rateMovie(rating)
+            }
+        )
+
+
         Button(
             onClick = {
                 viewModel.deleteMovie()
@@ -197,6 +212,28 @@ fun MovieDetailsScreen(
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(text = "Remove from watched")
+            }
+        }
+    }
+}
+
+@Composable
+fun MovieRatingBar(
+    isWatched: Boolean,
+    currentRating: Int?,
+    onRatingChanged: (Int) -> Unit
+) {
+    if (isWatched) {
+        Row {
+            (1..5).forEach { star ->
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Star $star",
+                    tint = if (currentRating != null && star <= currentRating) Color.Yellow else Color.Gray,
+                    modifier = Modifier
+                        .clickable { onRatingChanged(star) }
+                        .padding(4.dp)
+                )
             }
         }
     }

@@ -28,7 +28,8 @@ class FireBaseMovieRepository(
                 }
 
                 val movies = snapshot?.documents?.mapNotNull { document ->
-                    document.toObject(Movie::class.java)?.copy(id = document.id)
+                    val movie = document.toObject(Movie::class.java)?.copy(id = document.id)
+                    movie?.copy(rating = document.getLong("rating")?.toInt())
                 }.orEmpty()
 
                 trySend(movies)
@@ -39,16 +40,16 @@ class FireBaseMovieRepository(
     }
 
     override suspend fun getMovieById(id: String): Flow<Movie?> = callbackFlow {
-        val userRef = movieCollection.document(id)
+        val movieRef = movieCollection.document(id)
 
-        val listener = userRef.addSnapshotListener { snapshot, exception ->
+        val listener = movieRef.addSnapshotListener { snapshot, exception ->
             if (exception != null) {
                 close(exception)
                 return@addSnapshotListener
             }
 
-            val user = snapshot?.toObject(Movie::class.java)?.copy(id = snapshot.id)
-            trySend(user)
+            val movie = snapshot?.toObject(Movie::class.java)?.copy(id = snapshot.id)
+            trySend(movie)
         }
 
         awaitClose { listener.remove() }

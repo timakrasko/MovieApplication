@@ -101,6 +101,26 @@ class FireBaseUserRepository(
         }
     }
 
+    override suspend fun rateMovie(userId: String, movieId: String, rating: Int) {
+        if (userId.isBlank()) {
+            throw IllegalArgumentException("User ID cannot be empty")
+        }
+        if (movieId.isBlank()) {
+            throw IllegalArgumentException("Movie ID cannot be empty")
+        }
+
+        val userWatchedRef = userCollection
+            .document(userId)
+            .collection("watched_movies")
+            .document(movieId)
+
+        try {
+            userWatchedRef.update("rating", rating).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to rate movie: ${e.localizedMessage}")
+        }
+    }
+
     override suspend fun markMovieAsPlaned(userId: String, movie: Movie) {
         if (userId.isBlank()) {
             throw IllegalArgumentException("User ID cannot be empty")
