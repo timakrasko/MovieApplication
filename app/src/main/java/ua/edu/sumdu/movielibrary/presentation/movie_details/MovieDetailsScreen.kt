@@ -156,6 +156,7 @@ fun MovieDetailsScreen(
         )
 
 
+        if (state.isAdmin)
         Button(
             onClick = {
                 viewModel.deleteMovie()
@@ -166,6 +167,7 @@ fun MovieDetailsScreen(
             Text(text = "Delete")
         }
 
+        if (state.isAdmin)
         Button(
             onClick = {
                 onNavigateToEditScreen(UpdateScreenObject(movieId))

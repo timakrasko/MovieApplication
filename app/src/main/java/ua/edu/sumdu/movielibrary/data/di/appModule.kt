@@ -27,7 +27,7 @@ val appModule = module {
     single<UserRepository> { FireBaseUserRepository(get(), get()) }
     single<OnlineMovieRepository> {OnlineMovieRepository(get(), get())}
     viewModel { LoginViewModel(get())}
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
     viewModel { UsersViewModel(get()) }
     viewModel { (movieId: String) -> MovieDetailsViewModel(movieId, get(), get())}
     viewModel { MovieCreateViewModel(get()) }

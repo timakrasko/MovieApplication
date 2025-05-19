@@ -8,10 +8,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
+import ua.edu.sumdu.movielibrary.data.repository.UserRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
 
 class MainViewModel(
-    private val repository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val userRepository: UserRepository
 ): ViewModel() {
     private val _movieListState = MutableStateFlow(MovieListState())
     val movieListState: StateFlow<MovieListState> = _movieListState
@@ -19,11 +21,24 @@ class MainViewModel(
 
     init {
         observeMovies()
+        getCurrentUser()
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            val userId = userRepository.getCurrentUserId()
+            val userFlow = userRepository.getUserById(userId)
+            userFlow.collect { userData ->
+                _movieListState.value = _movieListState.value.copy(
+                    isCurrentUserAdmin = userData?.isAdmin == true,
+                )
+            }
+        }
     }
 
     private fun observeMovies() {
         viewModelScope.launch {
-            repository.getMovies()
+            movieRepository.getMovies()
                 .onStart {
                     _movieListState.value = _movieListState.value.copy(isLoading = true)
                 }
@@ -46,6 +61,7 @@ class MainViewModel(
 
 data class MovieListState(
     val isLoading: Boolean = false,
+    val isCurrentUserAdmin: Boolean = false,
     val errorMessage: String? = null,
     val movies: List<Movie> = emptyList()
 )

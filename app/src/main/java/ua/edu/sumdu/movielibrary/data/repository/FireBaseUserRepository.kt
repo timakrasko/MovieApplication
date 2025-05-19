@@ -34,7 +34,9 @@ class FireBaseUserRepository(
             }
 
             val user = snapshot?.toObject(User::class.java)
-            trySend(user)
+            val isAdmin = snapshot?.getBoolean("isAdmin") == true
+            val userWithRole = user?.copy(isAdmin = isAdmin)
+            trySend(userWithRole)
         }
 
         awaitClose { listener.remove() }
@@ -257,6 +259,21 @@ class FireBaseUserRepository(
                 close(e)
                 throw Exception("Failed to get friends list: ${e.localizedMessage}")
             }
+        }
+    }
+
+    override suspend fun removeUserFromFriends(friendId: String) {
+        val userId = getCurrentUserId()
+
+        val userFriendsRef = userCollection
+            .document(userId)
+            .collection("friends")
+            .document(friendId)
+
+        try {
+            userFriendsRef.delete().await()
+        } catch (e: Exception) {
+            throw Exception("Failed to remove friend: ${e.localizedMessage}")
         }
     }
 }

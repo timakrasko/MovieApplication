@@ -46,6 +46,7 @@ class MovieDetailsViewModel(
             userFlow.collect { userData ->
                 _uiState.value = _uiState.value.copy(
                     currentUserId = userData?.uid,
+                    isAdmin = userData?.isAdmin == true,
                 )
                 getWatchedAndPlanedMovies()
             }
@@ -142,10 +143,8 @@ class MovieDetailsViewModel(
             if (userId != null) {
                 userRepository.getWatchedMovies(userId)
                     .combine(userRepository.getPlanedMovies(userId)) { watched, planned ->
-                        // Знаходимо поточний фільм у переглянутих
                         val watchedMovie = watched.firstOrNull { it.id == _uiState.value.movie?.id }
 
-                        // Оновлюємо стан
                         _uiState.value.copy(
                             isLoading = false,
                             isWatched = watchedMovie != null,
@@ -173,6 +172,7 @@ data class MovieDetailsState(
     val movie: Movie? = null,
     val movieRating: Int? = null,
     val currentUserId: String? = null,
+    val isAdmin: Boolean = false,
     val isWatched: Boolean = false,
     val isPlanned: Boolean = false,
     val isLoading: Boolean = false,
