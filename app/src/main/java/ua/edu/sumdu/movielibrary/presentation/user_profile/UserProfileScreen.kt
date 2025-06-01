@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.ui.*
 import androidx.compose.runtime.Composable
@@ -42,29 +43,22 @@ fun UserProfileScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // User Profile Picture
-
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // User Email
         Text(
-            text = user?.email ?: "No Email",
+            text = user?.username ?: "No Username",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
-        Button(
-            onClick = {
-                viewModel.addFriend(user?.uid ?: "")
-            },
-        ) {
-            Text(text = "Add Friend")
+        if (state.showFriendActionButton) {
+                Button(onClick = { viewModel.toggleFriendship(user?.uid.toString()) }) {
+                    Text(
+                        if (state.isFriend) "Remove Friend"
+                        else "Add Friend"
+                    )
+                }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Watched Movies Section
         Text(
             text = "Watched Movies",
             fontSize = 20.sp,
@@ -124,7 +118,6 @@ fun UserProfileScreen(
                     modifier = Modifier.weight(1f))
                     {
                         items(state.friends) { friend ->
-                            // FriendItem - потрібно створити окремий Composable
                             FriendItem(friend = friend)
                         }
                     }
@@ -142,45 +135,49 @@ fun MovieItem(
     movie: Movie,
     navigateToMovieDetails: (MovieDto) -> Unit
 ) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-            .clickable { navigateToMovieDetails(movie.toMovieDto()) }
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .clickable { navigateToMovieDetails(movie.toMovieDto()) },
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        AsyncImage(
-            model = movie.imageUrl,
-            contentDescription = "Movie Poster",
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            modifier = Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = movie.title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(text = movie.director, fontSize = 14.sp, color = Color.Gray)
-        }
-
-        // Додаємо відображення рейтингу справа
-        movie.rating?.let { rating ->
-            Box(
+            AsyncImage(
+                model = movie.imageUrl,
+                contentDescription = "Movie Poster",
                 modifier = Modifier
-                    .size(32.dp)
-                    .background(Color.DarkGray, RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = movie.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1
+                )
+                Text(
+                    text = movie.director,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    color = Color.Gray
+                )
+            }
+
+            movie.rating?.let { rating ->
                 Text(
                     text = rating.toString(),
-                    color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }
@@ -191,20 +188,11 @@ fun MovieItem(
 fun FriendItem(
     friend: User,
 ) {
-    Card(
+    Text(
+        text = friend.username,
+        fontSize = 14.sp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Text(
-                text = friend?.email ?: "Loading...",
-                fontSize = 16.sp)
-        }
-    }
+            .padding(vertical = 8.dp, horizontal = 4.dp)
+    )
 }

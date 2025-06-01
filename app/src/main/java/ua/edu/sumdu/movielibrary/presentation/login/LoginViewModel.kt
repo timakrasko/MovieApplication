@@ -11,14 +11,6 @@ import ua.edu.sumdu.movielibrary.data.dto.MainScreenDataObject
 import ua.edu.sumdu.movielibrary.data.repository.OnlineMovieRepository
 
 
-data class LoginUiState(
-    val email: String = "timakrasko2004@gmail.com",
-    val password: String = "123456789",
-    val error: String = "",
-    val isLoading: Boolean = false,
-    val isSignedIn: Boolean = false
-)
-
 class LoginViewModel(
     private val repository: OnlineMovieRepository
 ) : ViewModel() {
@@ -34,6 +26,12 @@ class LoginViewModel(
     fun setPassword(password: String) {
         _uiState.update {
             it.copy(password = password)
+        }
+    }
+
+    fun setUsername(username: String) {
+        _uiState.update {
+            it.copy(username = username)
         }
     }
 
@@ -66,6 +64,7 @@ class LoginViewModel(
             repository.signUp(
                 _uiState.value.email,
                 _uiState.value.password,
+                _uiState.value.username,
                 onSignUpSuccess = { navData ->
                     onSignUpSuccess(navData)
                     _uiState.update {
@@ -80,22 +79,13 @@ class LoginViewModel(
             )
         }
     }
-
-//    companion object {
-//
-//        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-//            @Suppress("UNCHECKED_CAST")
-//            override fun <T : ViewModel> create(
-//                modelClass: Class<T>,
-//                extras: CreationExtras
-//            ): T {
-//                val application = checkNotNull(extras[APPLICATION_KEY])
-//                val savedStateHandle = extras.createSavedStateHandle()
-//
-//                return LoginViewModel(
-//                    OnlineMovieRepository()
-//                ) as T
-//            }
-//        }
-//    }
 }
+
+data class LoginUiState(
+    val email: String = "timakrasko2004@gmail.com",
+    val password: String = "123456789",
+    val error: String = "",
+    val username: String = "",
+    val isLoading: Boolean = false,
+    val isSignedIn: Boolean = false
+)

@@ -69,7 +69,7 @@ fun UserCard(
                     .padding(start = 8.dp)
             ) {
                 Text(
-                    text = user.email,
+                    text = user.username,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 20.sp

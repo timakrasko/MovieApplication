@@ -19,4 +19,5 @@ interface UserRepository {
     suspend fun addUserToFriends(friendId: String)
     suspend fun getFriends(userId: String): Flow<List<User>>
     suspend fun rateMovie(userId: String, movieId: String, rating: Int)
+    suspend fun removeUserFromFriends(friendId: String)
 }

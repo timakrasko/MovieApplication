@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
@@ -75,9 +76,13 @@ class UserProfileViewModel(
 
     fun loadFriends() {
         viewModelScope.launch {
-            val userId = _uiState.value.user?.uid ?: return@launch
-            userRepository.getFriends(userId)
-                .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
+            val profileUserId = _uiState.value.user?.uid ?: return@launch
+            val currentUserId = userRepository.getCurrentUserId()
+
+            userRepository.getFriends(profileUserId)
+                .onStart {
+                    _uiState.value = _uiState.value.copy(isLoading = true)
+                }
                 .catch { e ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
@@ -85,20 +90,42 @@ class UserProfileViewModel(
                     )
                 }
                 .collect { friends ->
+                    val currentUserFriends = userRepository.getFriends(currentUserId).firstOrNull() ?: emptyList()
+                    val isFriend = currentUserFriends.any { it.uid == profileUserId }
+
+                    val isOwnProfile = profileUserId == currentUserId
+
                     _uiState.value = _uiState.value.copy(
+                        isFriend = isFriend,
                         isLoading = false,
                         friends = friends,
+                        showFriendActionButton = !isOwnProfile,
                         errorMessage = null
                     )
                 }
         }
     }
 
-    fun addFriend(friendId: String) {
+    fun toggleFriendship(friendId: String) {
         viewModelScope.launch {
             try {
-                userRepository.addUserToFriends(friendId)
+                if (_uiState.value.isFriend) {
+                    userRepository.removeUserFromFriends(friendId)
+                } else {
+                    userRepository.addUserToFriends(friendId)
+                }
+                val currentUserId = userRepository.getCurrentUserId()
+
+                val isOwnProfile = friendId == currentUserId
+
+                _uiState.value = _uiState.value.copy(
+                    isFriend = !_uiState.value.isFriend,
+                    showFriendActionButton = !isOwnProfile,
+                )
             } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = e.localizedMessage,
+                )
             }
         }
     }
@@ -106,11 +133,13 @@ class UserProfileViewModel(
 
 data class UserProfileState(
     val isCurrentAuthorizedUser: Boolean = false,
+    val isFriend: Boolean = false,
     val user: User? = null,
     val watchedMovies: List<Movie> = emptyList(),
     val planedMovies: List<Movie> = emptyList(),
     val friends: List<User> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val showFriendActionButton: Boolean = false
 )
 

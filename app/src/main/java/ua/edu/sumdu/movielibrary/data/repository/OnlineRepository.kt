@@ -18,11 +18,12 @@ class OnlineMovieRepository(
     suspend fun signUp(
         email: String?,
         password: String?,
+        username: String?,
         onSignUpSuccess: (MainScreenDataObject) -> Unit,
         onSignUpFailure: (String) -> Unit
     ) {
-        if (email.isNullOrBlank() || password.isNullOrBlank()) {
-            onSignUpFailure("Email or password can't be empty")
+        if (email.isNullOrBlank() || password.isNullOrBlank() || username.isNullOrBlank()) {
+            onSignUpFailure("Email, username or password can't be empty")
             return
         }
 
@@ -30,7 +31,7 @@ class OnlineMovieRepository(
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user
             if (user != null) {
-                createUserInFirestoreIfNotExists(user.uid, email)
+                createUserInFirestoreIfNotExists(user.uid, email, username)
                 onSignUpSuccess(MainScreenDataObject)
             } else {
                 onSignUpFailure("User registration failed")
@@ -64,7 +65,7 @@ class OnlineMovieRepository(
         }
     }
 
-    private suspend fun createUserInFirestoreIfNotExists(userId: String, email: String) {
+    private suspend fun createUserInFirestoreIfNotExists(userId: String, email: String, username: String) {
         val userRef = firestore.collection("users").document(userId)
 
         try {
@@ -73,6 +74,7 @@ class OnlineMovieRepository(
                 val user = mapOf(
                     "email" to email,
                     "uid" to userId,
+                    "username" to username,
                     "isAdmin" to false
                 )
                 userRef.set(user).await()

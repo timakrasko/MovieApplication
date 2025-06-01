@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ua.edu.sumdu.movielibrary.domain.Movie
 import ua.edu.sumdu.movielibrary.domain.User
@@ -236,44 +237,44 @@ class FireBaseUserRepository(
         }
 
         return callbackFlow {
-            try {
-                val snapshot = userCollection
-                    .document(userId)
-                    .collection("friends")
-                    .get()
-                    .await()
-                
-                val friendIds = snapshot.documents.map { it.id }
+            val friendsCollectionRef = userCollection.document(userId).collection("friends")
 
-                val friends = friendIds.mapNotNull { friendId ->
-                    try {
-                        userCollection.document(friendId).get().await().toObject(User::class.java)
-                    } catch (e: Exception) {
-                        null
-                    }
+            val listenerRegistration = friendsCollectionRef.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
                 }
 
-                trySend(friends).isSuccess
-                close()
-            } catch (e: Exception) {
-                close(e)
-                throw Exception("Failed to get friends list: ${e.localizedMessage}")
+                val friendIds = snapshot?.documents?.map { it.id } ?: emptyList()
+
+                launch {
+                    val friends = friendIds.mapNotNull { friendId ->
+                        try {
+                            userCollection.document(friendId).get().await().toObject(User::class.java)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                    trySend(friends).isSuccess
+                }
             }
+
+            awaitClose { listenerRegistration.remove() }
         }
     }
 
     override suspend fun removeUserFromFriends(friendId: String) {
         val userId = getCurrentUserId()
 
-        val userFriendsRef = userCollection
-            .document(userId)
-            .collection("friends")
-            .document(friendId)
-
         try {
-            userFriendsRef.delete().await()
+            userCollection.document(userId)
+                .collection("friends")
+                .document(friendId)
+                .delete()
+                .await()
         } catch (e: Exception) {
-            throw Exception("Failed to remove friend: ${e.localizedMessage}")
+            throw Exception("Error removing friend: ${e.message}")
         }
     }
+
 }
