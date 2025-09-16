@@ -6,6 +6,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import ua.edu.sumdu.movielibrary.data.di.appModule
+import ua.edu.sumdu.movielibrary.data.di.networkingModule
 
 class MovieLibraryApp : Application(){
     override fun onCreate() {
@@ -14,7 +15,7 @@ class MovieLibraryApp : Application(){
             androidContext(this@MovieLibraryApp)
             androidLogger(Level.DEBUG)
 
-            modules(appModule)
+            modules(appModule, networkingModule)
         }
     }
 }

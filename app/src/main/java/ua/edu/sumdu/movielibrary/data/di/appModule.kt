@@ -6,8 +6,10 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import ua.edu.sumdu.movielibrary.data.remote.RemoteDatasource
 import ua.edu.sumdu.movielibrary.data.repository.FireBaseMovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.FireBaseUserRepository
+import ua.edu.sumdu.movielibrary.data.repository.ImdbRepository
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.OnlineMovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
@@ -23,14 +25,19 @@ val appModule = module {
     single { Firebase.storage }
     single { Firebase.firestore }
     single { Firebase.auth }
+    single { RemoteDatasource(get()) }
+
     single<MovieRepository> { FireBaseMovieRepository(get(), get(), get()) }
     single<UserRepository> { FireBaseUserRepository(get(), get()) }
     single<OnlineMovieRepository> {OnlineMovieRepository(get(), get())}
+    single<ImdbRepository> { ImdbRepository(get()) }
+
     viewModel { LoginViewModel(get())}
     viewModel { MainViewModel(get(), get()) }
     viewModel { UsersViewModel(get()) }
     viewModel { (movieId: String) -> MovieDetailsViewModel(movieId, get(), get())}
-    viewModel { MovieCreateViewModel(get()) }
+    viewModel { MovieCreateViewModel(get(), get()) }
     viewModel { (movieId: String) -> MovieUpdateViewModel(movieId, get())}
     viewModel { (userId: String) -> UserProfileViewModel(userId, get())}
+
 }
