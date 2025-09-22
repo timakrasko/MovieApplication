@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -155,65 +157,93 @@ fun MovieDetailsScreen(
             }
         )
 
-
-        if (state.isAdmin)
-        Button(
-            onClick = {
-                viewModel.deleteMovie()
-                onNavigateBack()
-            },
-            modifier = Modifier.align(Alignment.End)
+        Row(
+            horizontalArrangement = Arrangement.End
         ) {
-            Text(text = "Delete")
-        }
-
-        if (state.isAdmin)
-        Button(
-            onClick = {
-                onNavigateToEditScreen(UpdateScreenObject(movieId))
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text(text = "Edit")
-        }
-
-        if (!state.isWatched) {
-            Button(
-                onClick = {
-                    viewModel.markMovieAsWatched()
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(text = "Add to watched")
-            }
-
-            if (!state.isPlanned) {
+            if (!state.isWatched) {
                 Button(
                     onClick = {
-                        viewModel.markMovieAsPlaned()
+                        viewModel.markMovieAsWatched()
                     },
-                    modifier = Modifier.align(Alignment.End)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    modifier = Modifier.padding(end = 8.dp)
                 ) {
-                    Text(text = "Add to planed")
+                    Text(text = "Add to watched")
+                }
+
+                if (!state.isPlanned) {
+                    Button(
+                        onClick = {
+                            viewModel.markMovieAsPlaned()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    ) {
+                        Text(text = "Add to planned")
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            viewModel.removePlanedMovie()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        Text(text = "Remove from planned")
+                    }
                 }
             } else {
                 Button(
                     onClick = {
-                        viewModel.removePlanedMovie()
+                        viewModel.removeWatchedMovie()
                     },
-                    modifier = Modifier.align(Alignment.End)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 ) {
-                    Text(text = "Remove from planed")
+                    Text(text = "Remove from watched")
                 }
             }
-        } else {
-            Button(
-                onClick = {
-                    viewModel.removeWatchedMovie()
-                },
-                modifier = Modifier.align(Alignment.End)
+        }
+
+        if (state.isAdmin) {
+            Row(
+                modifier = Modifier.padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(text = "Remove from watched")
+                Button(
+                    onClick = {
+                        viewModel.deleteMovie()
+                        onNavigateBack()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    ),
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Text(text = "Delete")
+                }
+
+                Button(
+                    onClick = {
+                        onNavigateToEditScreen(UpdateScreenObject(movieId))
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                ) {
+                    Text(text = "Edit")
+                }
             }
         }
     }
@@ -238,5 +268,7 @@ fun MovieRatingBar(
                 )
             }
         }
+    } else {
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }

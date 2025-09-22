@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ua.edu.sumdu.movielibrary.data.repository.MovieRepository
 import ua.edu.sumdu.movielibrary.data.repository.UserRepository
 import ua.edu.sumdu.movielibrary.domain.Movie
+import java.util.Locale
 
 class MainViewModel(
     private val movieRepository: MovieRepository,
@@ -18,10 +19,35 @@ class MainViewModel(
     private val _movieListState = MutableStateFlow(MovieListState())
     val movieListState: StateFlow<MovieListState> = _movieListState
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
 
     init {
         observeMovies()
         getCurrentUser()
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+        filterMovies()
+    }
+
+    private fun filterMovies() {
+        val currentMovies = _movieListState.value.allMovies
+        val query = _searchQuery.value.lowercase(Locale.getDefault())
+
+        val filteredMovies = if (query.isBlank()) {
+            currentMovies
+        } else {
+            currentMovies.filter {
+                it.title.lowercase(Locale.getDefault()).contains(query)
+            }
+        }
+
+        _movieListState.value = _movieListState.value.copy(
+            movies = filteredMovies
+        )
     }
 
     private fun getCurrentUser() {
@@ -51,6 +77,7 @@ class MainViewModel(
                 .collect { movies ->
                     _movieListState.value = _movieListState.value.copy(
                         isLoading = false,
+                        allMovies = movies,
                         movies = movies,
                         errorMessage = null
                     )
@@ -63,5 +90,6 @@ data class MovieListState(
     val isLoading: Boolean = false,
     val isCurrentUserAdmin: Boolean = false,
     val errorMessage: String? = null,
-    val movies: List<Movie> = emptyList()
+    val movies: List<Movie> = emptyList(),
+    val allMovies: List<Movie> = emptyList()
 )
