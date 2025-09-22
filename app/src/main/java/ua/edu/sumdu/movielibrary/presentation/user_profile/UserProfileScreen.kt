@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +26,7 @@ import org.koin.core.parameter.parametersOf
 import ua.edu.sumdu.movielibrary.data.dto.MovieDto
 import ua.edu.sumdu.movielibrary.data.dto.UserDto
 import ua.edu.sumdu.movielibrary.data.dto.toMovieDto
+import ua.edu.sumdu.movielibrary.data.dto.toUserDto
 import ua.edu.sumdu.movielibrary.domain.Movie
 import ua.edu.sumdu.movielibrary.domain.User
 
@@ -32,6 +34,7 @@ import ua.edu.sumdu.movielibrary.domain.User
 fun UserProfileScreen(
     userDto: UserDto,
     navigateToMovieDetails: (MovieDto) -> Unit,
+    navigateToFriendDetails: (UserDto) -> Unit
 ) {
     val viewModel: UserProfileViewModel = koinViewModel(parameters = { parametersOf(userDto.uid) })
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -118,7 +121,7 @@ fun UserProfileScreen(
                     modifier = Modifier.weight(1f))
                     {
                         items(state.friends) { friend ->
-                            FriendItem(friend = friend)
+                            FriendItem(friend = friend, navigateToFriendDetails)
                         }
                     }
             }
@@ -187,6 +190,7 @@ fun MovieItem(
 @Composable
 fun FriendItem(
     friend: User,
+    navigateToFriendDetails: (UserDto) -> Unit
 ) {
     Text(
         text = friend.username,
@@ -194,5 +198,6 @@ fun FriendItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 4.dp)
+            .clickable{navigateToFriendDetails(friend.toUserDto())},
     )
 }
