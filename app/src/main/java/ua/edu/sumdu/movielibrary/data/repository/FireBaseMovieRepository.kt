@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import ua.edu.sumdu.movielibrary.domain.Movie
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.UUID
 
 
@@ -97,6 +100,16 @@ class FireBaseMovieRepository(
 
         val downloadUrl = imageRef.downloadUrl.await()
         return downloadUrl.toString()
+    }
+
+    override suspend fun uploadImageFromUrlToStorage(url: String): String {
+        val connection = URL(url).openConnection() as HttpURLConnection
+        val inputStream = connection.inputStream
+        val tempFile = File.createTempFile("temp", ".jpg")
+        tempFile.outputStream().use { inputStream.copyTo(it) }
+        connection.disconnect()
+        val fileUri = Uri.fromFile(tempFile)
+        return uploadImageToStorage(fileUri)
     }
 
     private suspend fun deleteImageFromStorage(imageUrl: String) {

@@ -82,8 +82,8 @@ class LoginViewModel(
 }
 
 data class LoginUiState(
-    val email: String = "timakrasko2004@gmail.com",
-    val password: String = "123456789",
+    val email: String = "",
+    val password: String = "",
     val error: String = "",
     val username: String = "",
     val isLoading: Boolean = false,

@@ -23,12 +23,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ua.edu.sumdu.movielibrary.domain.Genre
@@ -61,6 +64,8 @@ fun MovieCreateScreen(
     val scrollPosition by viewModel.scrollState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState(scrollPosition)
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedMovieId by remember { mutableStateOf("tt0120737") }
 
     val allGenres = Genre.entries
 
@@ -70,12 +75,55 @@ fun MovieCreateScreen(
             .padding(16.dp)
             .verticalScroll(scrollState)
     ) {
-        Text(
-            text = "Create Movie",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Row {
+            Text(
+                text = "Create Movie",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Button(
+                onClick = {
+                    showDialog = true
+                },
+            ) {
+                Text(text = "Load")
+            }
+        }
+
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Enter movie ID") },
+                text = {
+                    TextField(
+                        value = selectedMovieId,
+                        onValueChange = { selectedMovieId = it },
+                        label = { ("ID") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.uploadMovie(selectedMovieId)
+                            }
+                            showDialog = false
+                        }
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showDialog = false }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
 
         OutlinedTextField(
             value = movieState.title,

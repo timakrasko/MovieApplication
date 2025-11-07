@@ -94,6 +94,8 @@ dependencies {
     testImplementation (libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)
     implementation(libs.bundles.koin)
-
-
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation(libs.retrofit)
+    implementation(libs.kotlinx.coroutines.android)
 }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -39,9 +40,9 @@ fun MovieNavHost(
     modifier: Modifier = Modifier,
 ) {
     val topLevelRoutes = listOf(
-        TopLevelRoute("Main", MainScreenDataObject),
-        TopLevelRoute("Profile", UserDto()),
-        TopLevelRoute("Users", UsersScreenObject)
+        TopLevelRoute("Main", MainScreenDataObject, R.drawable.ic_home),
+        TopLevelRoute("Profile", UserDto(), R.drawable.ic_personal_page),
+        TopLevelRoute("Users", UsersScreenObject, R.drawable.ic_person_search)
     )
     Scaffold(
         bottomBar = {
@@ -58,12 +59,12 @@ fun MovieNavHost(
                         NavigationBarItem(
                             icon = {
                                 Icon(
-                                    imageVector =  ImageVector.vectorResource(R.drawable.ic_settings),
+                                    imageVector =  ImageVector.vectorResource(topLevelRoute.iconId),
                                     contentDescription = topLevelRoute.name
                                 )
                             },
                             label = { Text(topLevelRoute.name) },
-                            selected = currentDestination?.route == topLevelRoute.route.toString(),
+                            selected = currentDestination?.hierarchy?.any { it.route?.contains(topLevelRoute.route::class.qualifiedName.toString()) ?: false } == true,
                             onClick = {
                                 navController.navigate(topLevelRoute.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
@@ -72,7 +73,7 @@ fun MovieNavHost(
 
                                     launchSingleTop = true
 
-                                    restoreState = true
+                                    restoreState = false
                                 }
                             }
                         )
@@ -137,6 +138,9 @@ fun MovieNavHost(
                     navigateToMovieDetails = { movie ->
                         navController.navigate(movie)
                     },
+                    navigateToFriendDetails = { user ->
+                        navController.navigate(user)
+                    }
                 )
             }
 
@@ -150,4 +154,4 @@ fun MovieNavHost(
     }
 }
 
-data class TopLevelRoute<T : Any>(val name: String, val route: T)
+data class TopLevelRoute<T : Any>(val name: String, val route: T, val iconId: Int)
